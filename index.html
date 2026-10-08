@@ -2,74 +2,102 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NOVA GOLD V1</title>
+<title>NOVA GOLD FINAL</title>
 <style>
 body{background:#000;color:#fff;font-family:Arial;padding:10px}
-.card{background:#111;border:1px solid #333;border-radius:10px;padding:12px;margin-bottom:10px;text-align:center}
-input{width:100%;padding:16px;font-size:24px;text-align:center;background:#000;color:#ffd700;border:3px solid #ffd700;border-radius:8px}
-button{width:100%;padding:14px;margin-top:8px;font-weight:bold;border-radius:8px;border:0}
-.armed{background:#0f0;color:#000;animation:b1 0.5s infinite}
-.ring{background:#f00;color:#fff;animation:b2 0.3s infinite;font-size:20px}
-@keyframes b1{50%{background:#fff}} @keyframes b2{50%{background:#ff0;color:#000}}
+.card{background:#151515;border:1px solid #333;border-radius:12px;padding:14px;margin-bottom:10px;text-align:center}
+input{width:100%;padding:18px;font-size:26px;text-align:center;background:#000;color:#ffd700;border:3px solid #ffd700;border-radius:10px;box-sizing:border-box}
+button{width:100%;padding:16px;margin-top:10px;font-weight:bold;font-size:15px;border-radius:10px;border:0}
 </style>
 </head>
 <body>
-<h3 style="text-align:center">🪙 NOVA GOLD V1 + ALARM</h3>
+<h2 style="text-align:center;color:#ffd700">🪙 NOVA GOLD FINAL</h2>
 
 <div class="card">
-<div style="color:#888;font-size:10px">GOLD LOCKED - FAST MOVING</div>
-<div style="color:#ffd700;font-size:26px;font-weight:bold" id="locked">--</div>
-<div style="font-size:11px" id="count"></div>
-<button onclick="scanNext()" style="background:#ff4444;color:#fff">🔍 SCAN NEXT GOLD SIGNAL</button>
+<div style="color:#888;font-size:11px">LOCKED SIGNAL</div>
+<div style="color:#ffd700;font-size:30px;font-weight:bold" id="L">$3950 BUY</div>
+<div id="C" style="font-size:11px;color:#666">EAT TIME</div>
+<button onclick="SCAN()" style="background:#ff3344;color:#fff">🔍 SCAN NEXT GOLD SIGNAL</button>
+<button onclick="RESET()" style="background:#222;color:#888;font-size:10px">RESET IF --</button>
 </div>
 
-<div class="card" style="background:#0a2a4a" id="tp2">TP2</div>
-<div class="card" style="background:#0a1a3a;border:2px solid #0f0" id="tp1">TP1 ALARM</div>
-<div class="card" style="background:#332a00;border:2px solid #ffd700;color:#ffd700;font-weight:bold;font-size:16px" id="entry">GOLD ZONE</div>
-<div class="card" style="background:#3a0a0a" id="sl">SL SMALL</div>
+<div class="card" style="background:#0d2a50" id="T2">TP2 $3960</div>
+<div class="card" style="background:#0d1a40;border:2px solid #00ff88" id="T1">TP1 $3956 ALARM</div>
+<div class="card" style="background:#332a00;border:2px solid #ffd700;color:#ffd700;font-weight:bold;font-size:18px" id="Z">ZONE 3948 - 3950</div>
+<div class="card" style="background:#3a1010" id="S">SL 3945 SMALL LOSS</div>
 
 <div class="card">
-<div>Enter FBS GOLD price:</div>
-<input id="p" type="number" placeholder="e.g 3950.50">
-<button onclick="c()" style="background:#ffd700;color:#000">CHECK GOLD ZONE</button>
-<button id="alarmBtn" onclick="setAlarm()" style="background:#111;color:#0f0;border:2px solid #0f0">🔔 SET ALARM FOR GOLD TP</button>
-<button id="stopBtn" onclick="stopAlarm()" style="background:#333;display:none">🔇 STOP ALARM</button>
-<div id="r" style="margin-top:12px;font-size:20px;font-weight:bold;min-height:30px"></div>
-<div style="margin-top:8px;font-size:10px;color:#666">GOLD: SL $3 = $3 loss small (0.01 lot $0.30)<br>TP $6 = $6 profit (0.01 lot $0.60) 1:2 RR<br>Fast - 5 signals/day not boring!</div>
+<input id="P" type="number" placeholder="3950.50">
+<button onclick="CHECK()" style="background:#ffd700;color:#000">CHECK IF INSIDE ZONE</button>
+<button id="AB" onclick="ARM()" style="background:#111;color:#0f0;border:2px solid #0f0">🔔 SET ALARM FOR TP</button>
+<button id="SB" onclick="STOP()" style="background:#333;color:#fff;display:none">🔇 STOP ALARM</button>
+<div id="R" style="margin-top:12px;font-size:20px;font-weight:bold;min-height:30px"></div>
 </div>
 
 <script>
-let lp=localStorage.getItem('gold_price')||'3950';
-let lb=localStorage.getItem('gold_bias')||'BUY';
-let tp1Val=0, alarmArmed=false, ringLoop=null, audioCtx=null;
+let lp=3950.50, lb='BUY', tp1=3956.50;
+let armed=false, loop=null, ctx=null;
 
-function refresh(){
- let low=parseFloat(lp)-2, high=parseFloat(lp);
- if(lb!=='BUY'){ low=parseFloat(lp); high=parseFloat(lp)+2; }
- let sl=lb==='BUY'?low-3:high+3;
- tp1Val=lb==='BUY'?high+6:low-6;
- let tp2=lb==='BUY'?high+10:low-10;
- document.getElementById('locked').innerText='$'+lp+' '+lb+' GOLD';
- document.getElementById('entry').innerText='🟡 '+lb+' ZONE '+low.toFixed(2)+' - '+high.toFixed(2);
- document.getElementById('sl').innerText='🔴 SL '+sl.toFixed(2)+' (-$3 small)';
- document.getElementById('tp1').innerText='🔵 TP1 '+tp1Val.toFixed(2)+' (+$6) 🔔 ALARM';
- document.getElementById('tp2').innerText='🔵 TP2 '+tp2.toFixed(2)+' (+$10 runner)';
+function REF(){
+ lp=parseFloat(localStorage.getItem('gold_p'))||3950.50;
+ lb=localStorage.getItem('gold_b')||'BUY';
+ let low=lp-2, high=lp; if(lb!='BUY'){low=lp; high=lp+2;}
+ let sl=lb=='BUY'?low-3:high+3; tp1=lb=='BUY'?high+6:low-6; let tp2=lb=='BUY'?high+10:low-10;
+ document.getElementById('L').innerText='$'+lp+' '+lb;
+ document.getElementById('Z').innerText=lb+' ZONE '+low.toFixed(1)+' - '+high.toFixed(1);
+ document.getElementById('S').innerText='SL '+sl.toFixed(1)+' LOSS $3 SMALL';
+ document.getElementById('T1').innerText='TP1 '+tp1.toFixed(1)+' PROFIT $6 🔔';
+ document.getElementById('T2').innerText='TP2 '+tp2.toFixed(1)+' RUNNER $10';
 }
-refresh();
+REF();
 
-function c(){
- let v=parseFloat(document.getElementById('p').value);
- let r=document.getElementById('r'); if(!v) return;
- let low=parseFloat(lp)-2, high=parseFloat(lp);
- if(lb!=='BUY'){ low=parseFloat(lp); high=parseFloat(lp)+2; }
- if(v>=low && v<=high) r.innerHTML='<span style="color:#0f0">✅ BUY GOLD NOW '+v+'</span>';
- else if(v<low) r.innerHTML='<span style="color:#f44">🔻 BELOW '+v+'</span>';
- else r.innerHTML='<span style="color:#fc0">🔺 ABOVE '+v+'</span>';
- if((lb==='BUY' && v>=tp1Val-0.1) || (lb!=='BUY' && v<=tp1Val+0.1)) triggerAlarm(v);
+function CHECK(){
+ let v=parseFloat(document.getElementById('P').value);
+ let r=document.getElementById('R');
+ if(!v){r.innerText='Enter price'; return;}
+ let low=lp-2, high=lp; if(lb!='BUY'){low=lp; high=lp+2;}
+ if(v>=low && v<=high) r.innerHTML='<span style="color:#0f0">✅ INSIDE BUY NOW '+v+'</span>';
+ else if(v<low) r.innerHTML='<span style="color:#f55">🔻 BELOW '+v+'</span>';
+ else r.innerHTML='<span style="color:#ff0">🔺 ABOVE '+v+'</span>';
+ if((lb=='BUY' && v>=tp1-0.2) || (lb!='BUY' && v<=tp1+0.2)) RING(v);
 }
 
-function setAlarm(){ alarmArmed=true; document.getElementById('alarmBtn').innerText='✅ GOLD ARMED $'+tp1Val.toFixed(2); document.getElementById('alarmBtn').className='armed'; try{ audioCtx=new (window.AudioContext||window.webkitAudioContext)();}catch(e){} if(Notification && Notification.permission!=='granted') Notification.requestPermission(); alert('GOLD ALARM ARMED! Fast profit!'); }
-function triggerAlarm(p){ document.getElementById('r').innerHTML='<span style="color:#ff0;font-size:28px">💰 GOLD TP HIT!<br>$'+p+' CLOSE!</span>'; document.getElementById('alarmBtn').style.display='none'; let sb=document.getElementById('stopBtn'); sb.style.display='block'; sb.className='ring'; ringLoop=setInterval(()=>{ try{ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); let o=audioCtx.createOscillator(), g=audioCtx.createGain(); o.type='square'; o.frequency.value=1500; o.connect(g); g.connect(audioCtx.destination); g.gain.value=1; o.start(); setTimeout(()=>o.stop(),500);}catch(e){} if(navigator.vibrate) navigator.vibrate([1000,200,1000]); },700); }
-function stopAlarm(){ clearInterval(ringLoop); alarmArmed=false; document.getElementById('alarmBtn').style.display='block'; document.getElementById('alarmBtn').className=''; document.getElementById('stopBtn').style.display='none'; }
+function ARM(){
+ armed=true;
+ document.getElementById('AB').innerText='✅ ARMED $'+tp1+' WILL RING LOUD';
+ document.getElementById('AB').style.background='#0f0'; document.getElementById('AB').style.color='#000';
+ try{ctx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}
+ if(Notification && Notification.permission!='granted') Notification.requestPermission();
+ document.getElementById('R').innerText='Alarm armed for $'+tp1;
+}
 
-function t(){ let n=new Date(); let e=new Date(n.toLocaleString('en-US',{timeZone:'Africa/Nairobi'})); let tom=new Date(e); tom.setDate(tom.getDate()+1); tom.setHours(10,0,0
+function RING(p){
+ if(!armed) return;
+ document.getElementById('R').innerHTML='<span style="color:#ff0;font-size:28px">💰 PROFIT HIT $'+p+' CLOSE NOW!</span>';
+ document.getElementById('AB').style.display='none';
+ document.getElementById('SB').style.display='block';
+ document.getElementById('SB').style.background='#f00';
+ loop=setInterval(function(){
+  try{
+   if(!ctx) ctx=new(window.AudioContext||window.webkitAudioContext)();
+   let o=ctx.createOscillator(), g=ctx.createGain(); o.frequency.value=1400; o.type='square';
+   o.connect(g); g.connect(ctx.destination); g.gain.value=1; o.start(); setTimeout(function(){o.stop()},500);
+  }catch(e){}
+  if(navigator.vibrate) navigator.vibrate([1000,300,1000]);
+ },800);
+}
+
+function STOP(){ clearInterval(loop); armed=false; document.getElementById('AB').style.display='block'; document.getElementById('SB').style.display='none'; document.getElementById('AB').innerText='🔔 SET ALARM AGAIN'; document.getElementById('AB').style.background='#111'; document.getElementById('AB').style.color='#0f0';}
+
+function SCAN(){
+ let n=prompt('Enter NEW GOLD price from FBS e.g 3960',''); if(!n) return;
+ let p=parseFloat(n); if(isNaN(p)) return;
+ let b=confirm('OK=BUY, Cancel=SELL')?'BUY':'SELL';
+ localStorage.setItem('gold_p',p); localStorage.setItem('gold_b',b);
+ lp=p; lb=b; REF(); location.reload();
+}
+function RESET(){ localStorage.clear(); alert('Cleared! Reload'); location.reload(); }
+setInterval(function(){ let d=new Date(); let e=new Date(d.toLocaleString('en-US',{timeZone:'Africa/Nairobi'})); document.getElementById('C').innerText='EAT '+e.toLocaleTimeString(); },1000);
+</script>
+</body>
+ </html>
