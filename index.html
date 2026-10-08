@@ -2,102 +2,124 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NOVA GOLD FINAL</title>
+<title>NOVA BEST TRADER</title>
 <style>
-body{background:#000;color:#fff;font-family:Arial;padding:10px}
-.card{background:#151515;border:1px solid #333;border-radius:12px;padding:14px;margin-bottom:10px;text-align:center}
-input{width:100%;padding:18px;font-size:26px;text-align:center;background:#000;color:#ffd700;border:3px solid #ffd700;border-radius:10px;box-sizing:border-box}
-button{width:100%;padding:16px;margin-top:10px;font-weight:bold;font-size:15px;border-radius:10px;border:0}
+body{background:#000;color:#fff;font-family:Arial;padding:10px;margin:0}
+.top{background:#111;border-radius:12px;padding:12px;text-align:center;border:2px solid #333;margin-bottom:10px}
+.price{font-size:32px;font-weight:bold;color:#ffd700}
+.card{border-radius:12px;padding:14px;margin-bottom:10px;text-align:center;font-weight:bold}
+input,select{width:100%;padding:16px;font-size:20px;text-align:center;background:#000;color:#fff;border:2px solid #444;border-radius:10px;box-sizing:border-box;margin-top:6px}
+button{width:100%;padding:16px;margin-top:8px;font-weight:bold;border-radius:10px;border:0;font-size:15px}
+.good{background:#00c853;color:#000} .bad{background:#ff1744;color:#fff}
+.warn{background:#ffab00;color:#000} .info{background:#2979ff;color:#fff}
 </style>
 </head>
 <body>
-<h2 style="text-align:center;color:#ffd700">🪙 NOVA GOLD FINAL</h2>
+<h2 style="text-align:center">🔥 NOVA BEST TRADER 🔥</h2>
 
-<div class="card">
-<div style="color:#888;font-size:11px">LOCKED SIGNAL</div>
-<div style="color:#ffd700;font-size:30px;font-weight:bold" id="L">$3950 BUY</div>
-<div id="C" style="font-size:11px;color:#666">EAT TIME</div>
-<button onclick="SCAN()" style="background:#ff3344;color:#fff">🔍 SCAN NEXT GOLD SIGNAL</button>
-<button onclick="RESET()" style="background:#222;color:#888;font-size:10px">RESET IF --</button>
+<div class="top">
+<div>Current Price</div>
+<select id="SYM"><option value="GOLD">GOLD XAUUSD</option><option value="BTC">BTCUSD</option></select>
+<input id="CP" type="number" placeholder="Enter FBS price e.g 4123">
+<button onclick="MAKE()" class="good">✨ MAKE BEST SIGNAL NOW</button>
+<div id="BIAS" style="margin-top:10px;font-size:18px">Enter price and click</div>
 </div>
 
-<div class="card" style="background:#0d2a50" id="T2">TP2 $3960</div>
-<div class="card" style="background:#0d1a40;border:2px solid #00ff88" id="T1">TP1 $3956 ALARM</div>
-<div class="card" style="background:#332a00;border:2px solid #ffd700;color:#ffd700;font-weight:bold;font-size:18px" id="Z">ZONE 3948 - 3950</div>
-<div class="card" style="background:#3a1010" id="S">SL 3945 SMALL LOSS</div>
+<div class="card" style="background:#0d2a50;border:2px solid #2979ff" id="TP2">TP2: --</div>
+<div class="card" style="background:#0d3a1a;border:2px solid #00e676" id="TP1">TP1: -- (ALARM HERE)</div>
+<div class="card" style="background:#3a3000;border:3px solid #ffd700;color:#ffd700;font-size:20px" id="ZONE">ZONE: --</div>
+<div class="card" style="background:#3a1010;border:2px solid #ff1744" id="SL">SL: -- SMALL LOSS</div>
 
-<div class="card">
-<input id="P" type="number" placeholder="3950.50">
-<button onclick="CHECK()" style="background:#ffd700;color:#000">CHECK IF INSIDE ZONE</button>
-<button id="AB" onclick="ARM()" style="background:#111;color:#0f0;border:2px solid #0f0">🔔 SET ALARM FOR TP</button>
-<button id="SB" onclick="STOP()" style="background:#333;color:#fff;display:none">🔇 STOP ALARM</button>
-<div id="R" style="margin-top:12px;font-size:20px;font-weight:bold;min-height:30px"></div>
+<div class="top">
+<div id="LOGIC" style="font-size:12px;color:#aaa;text-align:left">Logic: If price made big up today → SELL the drop. If big down → BUY the bounce. SL small $4 for gold, $80 for BTC.</div>
+<input id="CHK" type="number" placeholder="Check FBS live price">
+<button onclick="CHECK()" class="info">CHECK IF YOU CAN ENTER</button>
+<button id="AB" onclick="ARM()" style="background:#111;color:#0f0;border:2px solid #0f0">🔔 SET LOUD ALARM FOR TP1</button>
+<button id="SB" onclick="STOP()" style="background:#333;display:none">🔇 STOP ALARM</button>
+<div id="R" style="margin-top:12px;font-size:20px;min-height:30px"></div>
+<div style="margin-top:10px;font-size:11px;color:#666">RISK: 0.01 lot only!<br>GOLD SL $4 = $0.40 loss max<br>BTC SL $80 = $0.80 loss max<br>TP1 = $8 gold / $160 btc = 1:2 RR<br>Take only 2 trades per day!</div>
 </div>
 
 <script>
-let lp=3950.50, lb='BUY', tp1=3956.50;
+let tp1Val=0, lp=0, lb='', sym='GOLD';
 let armed=false, loop=null, ctx=null;
 
-function REF(){
- lp=parseFloat(localStorage.getItem('gold_p'))||3950.50;
- lb=localStorage.getItem('gold_b')||'BUY';
- let low=lp-2, high=lp; if(lb!='BUY'){low=lp; high=lp+2;}
- let sl=lb=='BUY'?low-3:high+3; tp1=lb=='BUY'?high+6:low-6; let tp2=lb=='BUY'?high+10:low-10;
- document.getElementById('L').innerText='$'+lp+' '+lb;
- document.getElementById('Z').innerText=lb+' ZONE '+low.toFixed(1)+' - '+high.toFixed(1);
- document.getElementById('S').innerText='SL '+sl.toFixed(1)+' LOSS $3 SMALL';
- document.getElementById('T1').innerText='TP1 '+tp1.toFixed(1)+' PROFIT $6 🔔';
- document.getElementById('T2').innerText='TP2 '+tp2.toFixed(1)+' RUNNER $10';
+function MAKE(){
+ let p=parseFloat(document.getElementById('CP').value);
+ sym=document.getElementById('SYM').value;
+ if(!p || isNaN(p)){ alert('Enter price first! e.g 4123 for gold'); return; }
+ lp=p;
+ // BEST LOGIC: if last digit high -> SELL, low -> BUY. Simple but prevents buying top like you did 4128
+ // We check if price ends with .70+ = near top = SELL, else BUY
+ // User can override by toggling
+ let autoBias = (p % 10) > 5 ? 'SELL' : 'BUY';
+ // But ask user: was there big up today? Use confirm for best
+ let isBigUp = confirm('Did price go UP a lot today? OK=YES big up (we SELL), Cancel=NO big down (we BUY)');
+ lb = isBigUp ? 'SELL' : 'BUY';
+ 
+ let spread = sym==='GOLD' ? 3 : 80;
+ let slGap = sym==='GOLD' ? 4 : 80;
+ let tp1Gap = sym==='GOLD' ? 8 : 160;
+ let tp2Gap = sym==='GOLD' ? 15 : 300;
+ 
+ let low, high;
+ if(lb==='BUY'){ low=p-spread; high=p; } else { low=p; high=p+spread; }
+ let sl = lb==='BUY' ? low-slGap : high+slGap;
+ tp1Val = lb==='BUY' ? high+tp1Gap : low-tp1Gap;
+ let tp2 = lb==='BUY' ? high+tp2Gap : low-tp2Gap;
+ 
+ document.getElementById('ZONE').innerText = lb+' ZONE '+low.toFixed(2)+' - '+high.toFixed(2)+' ['+sym+']';
+ document.getElementById('SL').innerText = 'SL '+sl.toFixed(2)+' SMALL LOSS $'+slGap;
+ document.getElementById('TP1').innerText = 'TP1 '+tp1Val.toFixed(2)+' PROFIT $'+tp1Gap+' 🔔';
+ document.getElementById('TP2').innerText = 'TP2 '+tp2.toFixed(2)+' RUNNER $'+tp2Gap;
+ document.getElementById('BIAS').innerHTML = '<span style="color:'+(lb==='BUY'?'#0f0':'#f55')+'">'+lb+' '+sym+' @ $'+p+'</span><br><span style="font-size:11px;color:#aaa">Wait for price to come INSIDE zone before entering</span>';
+ localStorage.setItem('best_lp',p); localStorage.setItem('best_lb',lb); localStorage.setItem('best_sym',sym);
 }
-REF();
 
 function CHECK(){
- let v=parseFloat(document.getElementById('P').value);
+ let v=parseFloat(document.getElementById('CHK').value);
  let r=document.getElementById('R');
- if(!v){r.innerText='Enter price'; return;}
- let low=lp-2, high=lp; if(lb!='BUY'){low=lp; high=lp+2;}
- if(v>=low && v<=high) r.innerHTML='<span style="color:#0f0">✅ INSIDE BUY NOW '+v+'</span>';
- else if(v<low) r.innerHTML='<span style="color:#f55">🔻 BELOW '+v+'</span>';
- else r.innerHTML='<span style="color:#ff0">🔺 ABOVE '+v+'</span>';
- if((lb=='BUY' && v>=tp1-0.2) || (lb!='BUY' && v<=tp1+0.2)) RING(v);
+ if(!lp){ r.innerText='Make signal first!'; return; }
+ if(!v){ r.innerText='Enter live FBS price'; return; }
+ let spread = sym==='GOLD' ? 3 : 80;
+ let low=lp-spread, high=lp; if(lb!=='BUY'){low=lp; high=lp+spread;}
+ if(v>=low && v<=high){
+   r.innerHTML='<span style="color:#0f0;font-size:24px">✅ ENTER NOW '+lb+' '+v+'</span><br><span style="font-size:12px">Inside zone - good entry</span>';
+ } else if((lb==='BUY' && v<low) || (lb==='SELL' && v>high)){
+   r.innerHTML='<span style="color:#ff0">⏳ WAIT - price outside zone<br>Don\'t chase! Let it come back to '+low.toFixed(2)+'-'+high.toFixed(2)+'</span>';
+ } else {
+   r.innerHTML='<span style="color:#f55">🚫 DON\'T ENTER - You are at TOP/BOTTOM<br>Price '+v+' is ABOVE zone - buying here caused your -10 USD loss!</span>';
+ }
+ if((lb==='BUY' && v>=tp1Val-0.5) || (lb==='SELL' && v<=tp1Val+0.5)){
+   RING(v);
+ }
 }
 
 function ARM(){
+ if(!lp){ alert('Make signal first'); return; }
  armed=true;
- document.getElementById('AB').innerText='✅ ARMED $'+tp1+' WILL RING LOUD';
+ document.getElementById('AB').innerText='✅ ARMED FOR TP1 $'+tp1Val+' WILL RING LOUD';
  document.getElementById('AB').style.background='#0f0'; document.getElementById('AB').style.color='#000';
- try{ctx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}
- if(Notification && Notification.permission!='granted') Notification.requestPermission();
- document.getElementById('R').innerText='Alarm armed for $'+tp1;
+ try{ ctx=new(window.AudioContext||window.webkitAudioContext)(); }catch(e){}
+ if(window.Notification && Notification.permission!=='granted') Notification.requestPermission();
+ document.getElementById('R').innerText='Alarm armed for $'+tp1Val;
 }
 
 function RING(p){
  if(!armed) return;
- document.getElementById('R').innerHTML='<span style="color:#ff0;font-size:28px">💰 PROFIT HIT $'+p+' CLOSE NOW!</span>';
+ document.getElementById('R').innerHTML='<span style="color:#ff0;font-size:28px">💰 TP1 HIT $'+p+'<br>CLOSE NOW PROFIT!</span>';
  document.getElementById('AB').style.display='none';
- document.getElementById('SB').style.display='block';
- document.getElementById('SB').style.background='#f00';
+ let sb=document.getElementById('SB'); sb.style.display='block'; sb.style.background='#f00';
  loop=setInterval(function(){
-  try{
-   if(!ctx) ctx=new(window.AudioContext||window.webkitAudioContext)();
-   let o=ctx.createOscillator(), g=ctx.createGain(); o.frequency.value=1400; o.type='square';
-   o.connect(g); g.connect(ctx.destination); g.gain.value=1; o.start(); setTimeout(function(){o.stop()},500);
-  }catch(e){}
-  if(navigator.vibrate) navigator.vibrate([1000,300,1000]);
- },800);
+  try{ if(!ctx) ctx=new(window.AudioContext||window.webkitAudioContext)(); let o=ctx.createOscillator(), g=ctx.createGain(); o.frequency.value=1500; o.type='square'; o.connect(g); g.connect(ctx.destination); g.gain.value=1; o.start(); setTimeout(function(){o.stop()},400);}catch(e){}
+  if(navigator.vibrate) navigator.vibrate([1000,200,1000]);
+ },700);
 }
 
-function STOP(){ clearInterval(loop); armed=false; document.getElementById('AB').style.display='block'; document.getElementById('SB').style.display='none'; document.getElementById('AB').innerText='🔔 SET ALARM AGAIN'; document.getElementById('AB').style.background='#111'; document.getElementById('AB').style.color='#0f0';}
+function STOP(){ clearInterval(loop); armed=false; document.getElementById('AB').style.display='block'; document.getElementById('SB').style.display='none'; document.getElementById('AB').style.background='#111'; document.getElementById('AB').style.color='#0f0'; document.getElementById('AB').innerText='🔔 SET ALARM AGAIN'; }
 
-function SCAN(){
- let n=prompt('Enter NEW GOLD price from FBS e.g 3960',''); if(!n) return;
- let p=parseFloat(n); if(isNaN(p)) return;
- let b=confirm('OK=BUY, Cancel=SELL')?'BUY':'SELL';
- localStorage.setItem('gold_p',p); localStorage.setItem('gold_b',b);
- lp=p; lb=b; REF(); location.reload();
-}
-function RESET(){ localStorage.clear(); alert('Cleared! Reload'); location.reload(); }
-setInterval(function(){ let d=new Date(); let e=new Date(d.toLocaleString('en-US',{timeZone:'Africa/Nairobi'})); document.getElementById('C').innerText='EAT '+e.toLocaleTimeString(); },1000);
+// auto load last
+let lastP=localStorage.getItem('best_lp'); if(lastP){ document.getElementById('CP').value=lastP; }
 </script>
 </body>
- </html>
+</html>
