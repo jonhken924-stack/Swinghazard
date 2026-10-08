@@ -2,77 +2,57 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NOVA V13 SIMPLE</title>
+<title>NOVA V14 SIMPLEST</title>
 <style>
-body{background:#000;color:#fff;font-family:Arial;padding:10px;margin:0}
-.card{background:#111;border:1px solid #333;border-radius:10px;padding:10px;margin-bottom:10px}
-.box{padding:14px;border-radius:8px;text-align:center;font-weight:bold;margin-bottom:8px;font-size:14px}
+body{background:#000;color:#fff;font-family:Arial;padding:10px}
+.card{background:#111;border:1px solid #333;border-radius:10px;padding:12px;margin-bottom:10px;text-align:center}
+input{width:100%;padding:14px;font-size:20px;text-align:center;background:#000;color:#0f0;border:2px solid #0f0;border-radius:8px;box-sizing:border-box}
+button{width:100%;padding:14px;margin-top:8px;background:#ffcc00;color:#000;font-weight:bold;font-size:16px;border-radius:8px;border:0}
 </style>
 </head>
 <body>
-<h3>NOVA V13 SIMPLE ₿</h3>
-
-<div class="card" style="text-align:center">
-<div style="font-size:12px;color:#888">LOCKED ENTRY TODAY - NEVER CHANGES</div>
-<div style="font-size:22px;color:#ffcc00;font-weight:bold" id="locked">83093 BUY</div>
-<div style="font-size:11px;color:#888">Date: <span id="ldate"></span> | Server: <span id="stime"></span></div>
-<div style="font-size:11px;color:#00ff88" id="count">Lock until tomorrow 10:00 AM EAT</div>
-</div>
+<h3 style="text-align:center">NOVA V14 SIMPLE ₿</h3>
 
 <div class="card">
-<div class="box" style="background:#0a2a4a;border:1px solid #26a6ff;color:#88ccff">🔵 TP2 RUNNER $83993 (+$900 3R) - LEAVE RUNNING</div>
-<div class="box" style="background:#0a1a3a;border:1px solid #26a6ff">🔵 TP1 $83693 (+$600 2R) - CLOSE HERE</div>
-<div class="box" style="background:#332a00;border:2px solid #ffcc00;color:#ffcc00" id="entryBox">🟡 BUY ENTRY ZONE $82893 - $83093 - BUY NOW INSIDE</div>
-<div class="box" style="background:#3a0a0a;border:1px solid #ff4444;color:#ffaaaa">🔴 SL $82593 (-$300) - FIXED</div>
-<div style="height:2px;background:#00ff88;margin:8px 0"></div>
-<div style="text-align:center;font-size:12px">LIVE FBS PRICE: Enter below to check zone</div>
-<input id="fbs" type="number" placeholder="Enter FBS price e.g 82892" style="width:100%;padding:12px;margin-top:6px;background:#000;color:#0f0;border:1px solid #0f0;border-radius:6px;text-align:center;font-size:18px">
-<button onclick="check()" style="width:100%;padding:12px;margin-top:6px;background:#ffcc00;color:#000;border-radius:6px;font-weight:bold">CHECK IF INSIDE ZONE</button>
-<div id="result" style="text-align:center;margin-top:8px;font-weight:bold;font-size:16px"></div>
+<div style="color:#888;font-size:11px">LOCKED TODAY - SAME FOR ALL CLIENTS</div>
+<div style="color:#ffcc00;font-size:26px;font-weight:bold">$83093 BUY</div>
+<div style="font-size:11px" id="count">Loading countdown...</div>
 </div>
 
-<div class="card" style="font-size:12px">
-<b>FBS SETUP:</b><br>
-BUY 0.01 at 82893-83093<br>
-SL 82593<br>
-TP1 83693<br>
-TP2 83993 runner<br>
-<span style="color:#888">BE at +$150 | $10 acc risk $3 | $63 acc risk $3</span>
+<div class="card" style="background:#0a2a4a;border-color:#26a6ff">🔵 TP2 $83993 RUNNER</div>
+<div class="card" style="background:#0a1a3a;border-color:#26a6ff">🔵 TP1 $83693</div>
+<div class="card" style="background:#332a00;border:2px solid #ffcc00;color:#ffcc00;font-weight:bold;font-size:16px">🟡 BUY ZONE 82893 - 83093</div>
+<div class="card" style="background:#3a0a0a;border-color:#ff4444">🔴 SL $82593</div>
+
+<div class="card">
+<div style="margin-bottom:6px">Enter FBS price from MT5:</div>
+<input id="p" type="number" placeholder="82892">
+<button onclick="c()">CHECK ZONE</button>
+<div id="r" style="margin-top:12px;font-size:18px;font-weight:bold;min-height:24px"></div>
+</div>
+
+<div class="card" style="font-size:12px;text-align:left">
+BUY 0.01<br>SL 82593 | TP 83693 / 83993<br>BE at +150
 </div>
 
 <script>
-let lp=localStorage.getItem('v7_btcPrice')||'83093';
-let lb=localStorage.getItem('v7_btcBias')||'BUY';
-let ld=localStorage.getItem('v7_btcDate')||new Date().toDateString();
-document.getElementById('locked').innerText='$'+lp+' '+lb;
-document.getElementById('ldate').innerText=ld;
-document.getElementById('entryBox').innerText='🟡 '+lb+' ENTRY ZONE '+(lb==='BUY'?'82893 - 83093':'83093 - 83293')+' - TRADE NOW';
-
-function updateTime(){
- let now=new Date();
- let eat=new Date(now.toLocaleString('en-US',{timeZone:'Africa/Nairobi'}));
- document.getElementById('stime').innerText=eat.toLocaleTimeString();
- let tomorrow=new Date(eat); tomorrow.setDate(tomorrow.getDate()+1); tomorrow.setHours(10,0,0,0);
- let diff=tomorrow-eat;
- let h=Math.floor(diff/3600000), m=Math.floor((diff%3600000)/60000), s=Math.floor((diff%60000)/1000);
- document.getElementById('count').innerText='Next lock in: '+h+'h '+m+'m '+s+'s | Same for all clients (EAT)';
+function c(){
+ var v=parseFloat(document.getElementById('p').value);
+ var r=document.getElementById('r');
+ if(!v){ r.innerHTML='Enter price first'; return; }
+ if(v>=82893 && v<=83093){ r.innerHTML='<span style="color:#00ff88">✅ BUY NOW - INSIDE ZONE<br>Price '+v+' good!</span>'; }
+ else if(v<82893){ r.innerHTML='<span style="color:#ff4444">🔻 BELOW ZONE '+v+'<br>Wait for bounce to 82893</span>'; }
+ else { r.innerHTML='<span style="color:#ffcc00">🔺 ABOVE ZONE '+v+'<br>Wait pullback</span>'; }
 }
-setInterval(updateTime,1000); updateTime();
-
-function check(){
- let p=parseFloat(document.getElementById('fbs').value);
- if(!p) return;
- let low=82893, high=83093;
- if(p>=low && p<=high){
-   document.getElementById('result').innerHTML='<span style="color:#00ff88">✅ INSIDE BUY ZONE! BUY NOW<br>SL 82593 | TP 83693</span>';
-   if(navigator.vibrate) navigator.vibrate([300,100,300]);
-   try{ new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg").play(); }catch(e){}
- } else if(p<low){
-   document.getElementById('result').innerHTML='<span style="color:#ff4444">BELOW ZONE - Wait bounce or SELL breakdown</span>';
- } else {
-   document.getElementById('result').innerHTML='<span style="color:#ffcc00">ABOVE ZONE - Wait pullback</span>';
- }
+function t(){
+ var now=new Date();
+ var eat=new Date(now.toLocaleString('en-US',{timeZone:'Africa/Nairobi'}));
+ var tom=new Date(eat); tom.setDate(tom.getDate()+1); tom.setHours(10,0,0,0);
+ var d=tom-eat;
+ var h=Math.floor(d/3600000), m=Math.floor((d%3600000)/60000), s=Math.floor((d%60000)/1000);
+ document.getElementById('count').innerHTML='EAT '+eat.toLocaleTimeString()+'<br>Next lock in: '+h+'h '+m+'m '+s+'s - Same for all';
 }
+setInterval(t,1000); t();
 </script>
 </body>
-</html>
+ </html>
