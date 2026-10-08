@@ -2,165 +2,144 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NOVA ROBOT BTC PRO CHART</title>
+<title>NOVA V11 FINAL</title>
 <style>
-body{background:#0a0a0a;color:#fff;font-family:Arial;padding:10px;margin:0}
-.card{background:#161616;border:1px solid #333;border-radius:12px;padding:12px;margin-bottom:10px}
-.zone{font-size:20px;font-weight:bold}
-.chart{position:relative;height:380px;background:#111;border:1px solid #333;border-radius:10px;margin-top:10px;overflow:hidden}
-.line{position:absolute;left:0;right:0;height:2px;display:flex;align-items:center;justify-content:space-between;padding:0 8px;font-size:12px;font-weight:bold}
-.entry{background:#00ff88;box-shadow:0 0 10px #00ff88;z-index:3;height:3px}
-.sl{background:#ff4444;z-index:2}
-.tp{background:#00bfff;z-index:2; border-top:2px dashed #00bfff}
-.priceTag{position:absolute;right:8px;font-size:11px;background:#000;padding:2px 6px;border-radius:4px}
-button{width:100%;padding:14px;border-radius:10px;border:none;font-weight:bold;margin-top:8px}
+body{background:#000;color:#fff;font-family:Arial;padding:8px;margin:0}
+.card{background:#121212;border:1px solid #2a2a2a;border-radius:12px;padding:10px;margin-bottom:10px}
+.chartWrap{position:relative;height:460px;background:#0e0e0e;border:1px solid #333;border-radius:10px;overflow:hidden}
+.box{position:absolute;left:12%;right:18%;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:11px;border-radius:2px}
+.entryBox{border:2px solid #ffcc00;background:rgba(255,204,0,0.18);z-index:3}
+.slBox{background:rgba(255,68,68,0.38);border:1px solid #ff4444;color:#ffb3b3;z-index:2}
+.tpBox{background:rgba(38,166,255,0.28);border:1px solid #26a6ff;color:#88ccff;z-index:2}
+.liveLine{position:absolute;left:0;right:0;height:2px;background:#ffcc00;z-index:5;display:flex;justify-content:space-between;align-items:center;padding:0 4px;font-size:11px;font-weight:bold}
+.priceLabel{position:absolute;right:0;padding:2px 6px;font-size:10px;border-radius:3px;font-weight:bold}
+button{border:none;border-radius:8px;font-weight:bold}
+input{border-radius:6px;border:1px solid #333;background:#111;color:#fff}
 </style>
 </head>
 <body>
-<h2 style="margin:8px 0">NOVA V8 ₿ BTC PRO CHART</h2>
+<h3 style="margin:6px">NOVA V11 ₿ FINAL 100% ROBOT</h3>
 
 <div class="card">
-<div style="display:flex;justify-content:space-between">
-<div>BTC: <b id="price" style="font-size:18px;color:#ffcc00">$---</b></div>
-<div id="status" style="font-size:12px;color:#00ff88">--</div>
+<div style="display:flex;justify-content:space-between;font-size:13px">
+<div>WEB: <b id="price" style="color:#ffcc00;font-size:16px">$--</b> | FBS: <b id="fbsPriceDisplay" style="color:#00ff88">$--</b></div>
+<div id="status" style="color:#00ff88;font-size:10px">--</div>
 </div>
-<div style="font-size:12px;color:#888">Locked: <span id="lockedP">--</span> | <span id="lockedD">--</span></div>
-<button id="alarmBtn" style="background:#ffcc00;color:#000;padding:10px;font-size:14px" onclick="enableNotify()">🔔 ENABLE ALARM - RING WHILE USING PHONE</button>
-<div id="notifStatus" style="font-size:11px;color:#aaa;margin-top:4px">Alarm rings ONLY inside zone</div>
+<div style="font-size:10px;color:#888">Locked: <span id="lockedP">--</span> | <span id="lockedD">--</span> | <span id="serverTime">--</span></div>
+
+<div style="margin-top:8px;display:flex;gap:4px">
+<input id="brokerPrice" type="number" placeholder="Enter FBS BTC price e.g 82915" style="flex:1;padding:10px">
+<button onclick="syncBroker()" style="width:auto;padding:10px 14px;background:#00ff88;color:#000">SYNC BROKER</button>
+</div>
+<div id="offsetInfo" style="font-size:10px;color:#888;margin-top:4px">Offset: 0 | Enter FBS price to match broker</div>
+
+<button style="width:100%;background:#ffcc00;color:#000;padding:10px;margin-top:8px" onclick="enable()">🔔 ENABLE ALARM - RING INSIDE ZONE</button>
+<div id="notifStatus" style="font-size:10px;color:#aaa;margin-top:4px">Alarm rings only inside zone</div>
 </div>
 
 <div class="card">
-<div id="zoneText" class="zone">--</div>
-<div class="chart" id="chart">
-<!-- Lines injected by JS -->
+<div id="zoneTitle" style="font-weight:bold;font-size:16px;margin-bottom:6px">--</div>
+<div class="chartWrap" id="chart"></div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;font-size:11px;margin-top:6px;gap:4px;text-align:center">
+<div style="background:#2a0a0a;padding:5px;border-radius:6px">🔴 SL<br><b id="slTxt">--</b><br><span style="color:#ff8888">-$300 (0.01 lot)</span></div>
+<div style="background:#1a1a00;padding:5px;border-radius:6px">🟡 ENTRY<br><b id="entryTxt">--</b><br><span id="biasBadge" style="padding:2px 4px;border-radius:3px;font-size:10px">--</span></div>
+<div style="background:#0a1a2a;padding:5px;border-radius:6px">🔵 TP<br><b id="tpTxt">--</b><br><span style="color:#88ccff">+$600 2R / +$900 3R runner</span></div>
 </div>
-<div style="display:grid;grid-template-columns:1fr 1fr;font-size:12px;margin-top:8px;gap:6px">
-<div style="background:#220000;padding:6px;border-radius:6px">🔴 SL: <b id="slPrice">--</b><br><span style="color:#ff8888">$300 risk on 0.01 BTC</span></div>
-<div style="background:#001a22;padding:6px;border-radius:6px">🔵 TP1: <b id="tp1Price">--</b><br><span style="color:#88ccff">+$600 (2R)</span><br>TP2: <b id="tp2Price">--</b> +$900 (3R)</div>
-</div>
-<div id="liveInfo" style="font-size:12px;color:#888;margin-top:6px"></div>
+<div id="info" style="font-size:11px;color:#888;margin-top:6px"></div>
 </div>
 
-<div class="card" style="font-size:12px">
-<b>CLIENT READY SETUP:</b><br>
-Entry: <span id="cEntry">--</span> | SL: <span id="cSL">--</span> | TP: <span id="cTP">--</span><br>
-For $10 acc: 0.01 lot | For $63 acc: 0.01 lot (safe)<br>
-BE at +$150 profit
+<div class="card" style="font-size:11px">
+<b>SET IN FBS MT5 NOW:</b><br>
+Entry: <span id="cEntry">--</span> | SL: <span id="cSL">--</span> | TP1: <span id="cTP">--</span> | TP2 Runner: <span id="cTP2">--</span><br>
+<span style="color:#888">For $10 acc and $63 acc: 0.01 BTC only | BE at +$150</span>
 </div>
 
 <script>
-let lockedPrice=localStorage.getItem('v7_btcPrice')||83093;
-let lockedDate=localStorage.getItem('v7_btcDate')||new Date().toDateString();
+let lockedPrice=localStorage.getItem('v7_btcPrice')||'83093';
 let lockedBias=localStorage.getItem('v7_btcBias')||'BUY';
-let notifyEnabled=false, lastAlarm=0;
+let lockedDate=localStorage.getItem('v7_btcDate')||new Date().toDateString();
+let priceOffset=parseFloat(localStorage.getItem('btcOffset')||'0');
+let notify=false, lastAlarm=0, lastWebPrice=0;
 
-function enableNotify(){
- notifyEnabled=true;
+document.getElementById('offsetInfo').innerText = `Offset: ${priceOffset>0?'+':''}${priceOffset.toFixed(0)} | Web and FBS ${priceOffset===0?'same':'synced'}`;
+
+function enable(){
+ notify=true;
  if("Notification" in window) Notification.requestPermission();
- document.getElementById('notifStatus').innerText='✅ ARMED - Will ring at entry even on WhatsApp';
- document.getElementById('alarmBtn').style.background='#00ff88';
  if(navigator.vibrate) navigator.vibrate(100);
- alert("✅ ALARM ARMED\n\nNow you will see chart drawn below\nIt will ring ONLY when BTC inside your zone");
+ alert("✅ ALARM ARMED\n\nNow you see LONG box if BUY, SHORT box if SELL\nSL red, TP blue, ENTRY yellow\nWill ring ONLY inside zone");
+ document.getElementById('notifStatus').innerText='✅ ARMED - Rings only at entry';
 }
 
-function drawChart(current, bias, entryLow, entryHigh){
- let chart=document.getElementById('chart');
- chart.innerHTML='';
+function syncBroker(){
+ let fbs=parseFloat(document.getElementById('brokerPrice').value);
+ if(!fbs || !lastWebPrice) return alert("Wait for web price to load, then enter FBS price from MT5");
+ priceOffset=fbs-lastWebPrice;
+ localStorage.setItem('btcOffset',priceOffset);
+ document.getElementById('offsetInfo').innerText=`Offset saved: ${priceOffset>0?'+':''}${priceOffset.toFixed(0)} | Web $${lastWebPrice.toFixed(0)} = FBS $${fbs.toFixed(0)} | Zones now match broker!`;
+ document.getElementById('fbsPriceDisplay').innerText='$'+fbs.toFixed(0);
+ alert(`✅ SYNCED!\nWeb $${lastWebPrice.toFixed(0)} = FBS $${fbs.toFixed(0)}\n\nNow set SL/TP from FBS section below`);
+}
+
+function draw(webPrice, bias, lowWeb, highWeb){
+ let c=document.getElementById('chart'); c.innerHTML='';
+ let fbsPrice=webPrice+priceOffset;
+ let low=lowWeb+priceOffset, high=highWeb+priceOffset;
  let sl, tp1, tp2;
- let chartMin, chartMax;
- 
- if(bias==='BUY'){
-   sl = entryLow - 300;
-   tp1 = entryHigh + 600;
-   tp2 = entryHigh + 900;
-   chartMin = sl - 100;
-   chartMax = tp2 + 100;
- } else {
-   sl = entryHigh + 300;
-   tp1 = entryLow - 600;
-   tp2 = entryLow - 900;
-   chartMin = tp2 - 100;
-   chartMax = sl + 100;
- }
- 
- let range = chartMax - chartMin;
- function yPos(price){ return ((chartMax - price)/range)*100; }
+ if(bias==='BUY'){ sl=low-300; tp1=high+600; tp2=high+900; }
+ else { sl=high+300; tp1=low-600; tp2=low-900; }
 
- // SL line
- let slDiv=document.createElement('div');
- slDiv.className='line sl';
- slDiv.style.top=yPos(sl)+'%';
- slDiv.innerHTML=`<span>🛑 SL STOP LOSS</span><span class="priceTag" style="color:#ff4444">$${sl.toFixed(0)}</span>`;
- chart.appendChild(slDiv);
+ let min=Math.min(sl,tp2,fbsPrice,webPrice)-120;
+ let max=Math.max(sl,tp2,fbsPrice,webPrice)+120;
+ let range=max-min;
+ let y=price=>((max-price)/range)*100;
 
- // Entry zone box
- let entryDiv=document.createElement('div');
- entryDiv.className='line entry';
- entryDiv.style.top=yPos((entryLow+entryHigh)/2)+'%';
- entryDiv.style.height='30px';
- entryDiv.style.background='rgba(0,255,136,0.25)';
- entryDiv.style.border='2px solid #00ff88';
- entryDiv.innerHTML=`<span>🟢 ${bias} ENTRY ZONE ${entryLow.toFixed(0)}-${entryHigh.toFixed(0)}</span><span class="priceTag" style="color:#00ff88">ENTER HERE</span>`;
- chart.appendChild(entryDiv);
+ // TP BOX
+ let tpBox=document.createElement('div'); tpBox.className='box tpBox';
+ tpBox.style.top=y(Math.max(tp1,tp2,high))+'%';
+ tpBox.style.height=Math.abs(y(Math.min(tp1,high))-y(Math.max(tp1,tp2)))+30+'%';
+ tpBox.innerHTML=`TP TARGET +$600 to +$900 RUNNER`;
+ c.appendChild(tpBox);
 
- // TP lines
- let tp1Div=document.createElement('div');
- tp1Div.className='line tp';
- tp1Div.style.top=yPos(tp1)+'%';
- tp1Div.innerHTML=`<span>🎯 TP1 +$600</span><span class="priceTag" style="color:#00bfff">$${tp1.toFixed(0)}</span>`;
- chart.appendChild(tp1Div);
+ // ENTRY BOX
+ let eBox=document.createElement('div'); eBox.className='box entryBox';
+ eBox.style.top=y(high)+'%'; eBox.style.height=Math.abs(y(high)-y(low))+'%';
+ eBox.innerHTML=`<span style="color:#ffcc00">${bias} ENTRY ${low.toFixed(0)} - ${high.toFixed(0)}</span>`;
+ c.appendChild(eBox);
 
- let tp2Div=document.createElement('div');
- tp2Div.className='line tp';
- tp2Div.style.top=yPos(tp2)+'%';
- tp2Div.style.background='transparent';
- tp2Div.style.borderTop='2px dashed #0066ff';
- tp2Div.innerHTML=`<span>🎯 TP2 +$900 (Runner)</span><span class="priceTag" style="color:#0066ff">$${tp2.toFixed(0)}</span>`;
- chart.appendChild(tp2Div);
+ // SL BOX
+ let sBox=document.createElement('div'); sBox.className='box slBox';
+ if(bias==='BUY'){ sBox.style.top=y(low)+'%'; sBox.style.height=Math.abs(y(low)-y(sl))+'%'; }
+ else { sBox.style.top=y(sl)+'%'; sBox.style.height=Math.abs(y(high)-y(sl))+'%'; }
+ sBox.innerHTML=`STOP LOSS $${sl.toFixed(0)} (-$300)`;
+ c.appendChild(sBox);
 
- // Current price line
- let curDiv=document.createElement('div');
- curDiv.className='line';
- curDiv.style.top=yPos(current)+'%';
- curDiv.style.background='#ffcc00';
- curDiv.style.zIndex='5';
- curDiv.innerHTML=`<span>⚡ LIVE $${current.toFixed(0)}</span><span class="priceTag" style="background:#ffcc00;color:#000">$${current.toFixed(0)}</span>`;
- chart.appendChild(curDiv);
+ // LIVE lines - both web and FBS
+ let live=document.createElement('div'); live.className='liveLine';
+ live.style.top=y(fbsPrice)+'%';
+ live.innerHTML=`<span style="background:#00ff88;color:#000;padding:1px 4px">FBS $${fbsPrice.toFixed(0)}</span><span style="background:#ffcc00;color:#000;padding:2px 6px;border-radius:3px">$${fbsPrice.toFixed(0)}</span>`;
+ c.appendChild(live);
 
- // Update text
- document.getElementById('slPrice').innerText='$'+sl.toFixed(0);
- document.getElementById('tp1Price').innerText='$'+tp1.toFixed(0);
- document.getElementById('tp2Price').innerText='$'+tp2.toFixed(0);
- document.getElementById('cEntry').innerText=entryLow.toFixed(0)+'-'+entryHigh.toFixed(0);
+ // Labels
+ [[sl,'#ff4444'],[low,'#ffcc00'],[high,'#ffcc00'],[tp1,'#26a6ff'],[tp2,'#0066ff']].forEach(([pr,col])=>{
+   let lbl=document.createElement('div'); lbl.className='priceLabel';
+   lbl.style.top=y(pr)+'%'; lbl.style.background=col; lbl.style.color=col==='#ffcc00'?'#000':'#fff';
+   lbl.innerText='$'+pr.toFixed(0); c.appendChild(lbl);
+ });
+
+ document.getElementById('slTxt').innerText='$'+sl.toFixed(0);
+ document.getElementById('entryTxt').innerText=low.toFixed(0)+'-'+high.toFixed(0);
+ document.getElementById('tpTxt').innerText='$'+tp1.toFixed(0)+' / $'+tp2.toFixed(0);
+ document.getElementById('cEntry').innerText=low.toFixed(0)+'-'+high.toFixed(0);
  document.getElementById('cSL').innerText=sl.toFixed(0);
- document.getElementById('cTP').innerText=tp1.toFixed(0)+' / '+tp2.toFixed(0);
-}
+ document.getElementById('cTP').innerText=tp1.toFixed(0);
+ document.getElementById('cTP2').innerText=tp2.toFixed(0)+' RUNNER';
+ document.getElementById('zoneTitle').innerHTML=`<span style="color:${bias==='BUY'?'#00ff88':'#ff4444'}">${bias} ZONE: ${low.toFixed(0)} - ${high.toFixed(0)} ${fbsPrice>=low&&fbsPrice<=high?'✅ TRADE NOW':''}</span>`;
+ document.getElementById('biasBadge').innerText=bias+' POSITION'; document.getElementById('biasBadge').style.background=bias==='BUY'?'#00ff88':'#ff4444'; document.getElementById('biasBadge').style.color='#000';
+ document.getElementById('info').innerText=`WEB $${webPrice.toFixed(0)} + Offset ${priceOffset.toFixed(0)} = FBS $${fbsPrice.toFixed(0)} | ${fbsPrice>=low&&fbsPrice<=high?'🔔 INSIDE ZONE - BUY NOW!':'Waiting...'}`;
+ document.getElementById('fbsPriceDisplay').innerText='$'+fbsPrice.toFixed(0);
 
-async function fetchBTC(){
- let p=0;
- try{let r=await fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT'); let j=await r.json(); p=parseFloat(j.price);}catch(e){
-   try{let r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd'); let j=await r.json(); p=j.bitcoin.usd;}catch(e){ p=82991; }
- }
- document.getElementById('price').innerText='$'+p.toFixed(2);
- document.getElementById('lockedP').innerText='$'+parseFloat(lockedPrice).toFixed(0);
- document.getElementById('lockedD').innerText=lockedDate;
- document.getElementById('status').innerText='LOCKED '+lockedBias+' - FIXED TODAY';
- document.getElementById('status').style.color='#00ff88';
-
- let low=parseFloat(lockedPrice), high=parseFloat(lockedPrice)+200;
- if(lockedBias==='BUY'){ low=parseFloat(lockedPrice)-200; high=parseFloat(lockedPrice); }
- document.getElementById('zoneText').innerHTML=`<span style="color:${lockedBias==='BUY'?'#00ff88':'#ff4444'}">${lockedBias} ZONE: ${low.toFixed(0)} - ${high.toFixed(0)} ${p>=low&&p<=high?'✅ INSIDE - BUY NOW':''}</span>`;
- document.getElementById('liveInfo').innerText=`Live: $${p.toFixed(0)} | ${p>=low&&p<=high?'🔔 ALARM SHOULD BE RINGING NOW!':'Waiting for price to enter zone...'}`;
-
- drawChart(p, lockedBias, low, high);
-
- if(notifyEnabled && p>=low && p<=high && Date.now()-lastAlarm>300000){
+ if(notify && fbsPrice>=low && fbsPrice<=high && Date.now()-lastAlarm>300000){
    lastAlarm=Date.now();
    if(navigator.vibrate) navigator.vibrate([500,200,500]);
-   if("Notification" in window && Notification.permission==="granted") new Notification(`₿ BUY NOW $${p.toFixed(0)}`, {body:`BTC in BUY zone ${low.toFixed(0)}-${high.toFixed(0)}. SL $${(low-300).toFixed(0)} TP $${(high+600).toFixed(0)}`});
- }
-}
-setInterval(fetchBTC,3000); fetchBTC();
-</script>
-</body>
- </html>
+   try{ new Audio("https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg").play(); }catch(e){}
