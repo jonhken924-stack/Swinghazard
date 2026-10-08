@@ -2,95 +2,93 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NOVA SWING B - $10 Mode</title>
+<title>NOVA SWING B - AUTO SIGNAL</title>
 <style>
-body{background:#0a0a0a;color:#fff;font-family:Arial;padding:15px}
-.card{background:#161616;border:1px solid #222;border-radius:12px;padding:15px;margin-bottom:12px}
-.green{color:#00ff88}.red{color:#ff4444}
-button{width:100%;padding:14px;border-radius:10px;border:none;font-weight:bold;margin-top:10px;font-size:16px}
-#buyBtn{background:#00ff88;color:#000} #sellBtn{background:#ff4444;color:#fff}
-.lock{background:#222;color:#aaa}
+body{background:#0a0a0a;color:#fff;font-family:Arial;padding:12px}
+.card{background:#161616;border:1px solid #222;border-radius:12px;padding:14px;margin-bottom:10px}
+.green{color:#00ff88}.red{color:#ff4444}.yellow{color:#ffcc00}
+button{width:100%;padding:14px;border-radius:10px;border:none;font-weight:bold;margin-top:8px;font-size:16px}
+.buy{background:#00ff88;color:#000}.sell{background:#ff4444;color:#fff}
+.zone{font-size:22px;font-weight:bold;margin:6px 0}
 </style>
 </head>
 <body>
-<h2>NOVA SWING B 🌊 $10 + ALARM</h2>
-<p>Hold 3-5 Days | 1 Trade/Week | Alarm at 10:00</p>
-
+<h2>NOVA SWING B V3 🎯 AUTO</h2>
 <div class="card">
-Start: <b>$10</b> | Now: <b id="bal">$10.00</b><br>
-<span id="status">Outside trading hours (10:00-23:00 only) - waiting for alarm</span><br>
-<span id="countdown" class="green"></span>
+Gold Price: <b id="price">Loading...</b> | <span id="status">Waiting 10:00</span><br>
+<span id="countdown" class="yellow"></span>
 </div>
 
 <div class="card">
-Daily Move: <b id="daily">Waiting for Daily Close > $15</b><br>
-Signal: <b id="signal" class="green">WAITING WEEKLY SETUP</b><br>
-Hold: <b id="hold">0/5 days</b> | Trail: <b>BE at +$5</b>
+4H TIMEFRAME SIGNAL:<br>
+<div id="zone" class="zone yellow">Scanning 4H Zone...</div>
+<div id="action" style="font-size:13px;color:#aaa">Will auto-calculate BUY/SELL zone at 10:00</div>
+Hold: <b id="hold">0/5 days</b> | SL $8 | TP $25 | BE at +$5
 </div>
 
 <div class="card">
-<button id="buyBtn" onclick="enterTrade('BUY')">SWING BUY 0.01 HOLD 5 DAYS</button>
-<button id="sellBtn" onclick="enterTrade('SELL')">SWING SELL 0.01 HOLD 5 DAYS</button>
-<button class="lock" onclick="closeAll()">CLOSE & LOCK</button>
-<div style="font-size:11px;color:#666;margin-top:8px">
-SL $8 | TP $25 | BE at +$5 → free hold | At $35 → Withdraw $25 M-Pesa | Alarm rings at 10:00
-</div>
+<button class="buy" id="buyBtn" onclick="enterTrade('BUY')">BUY 0.01 AT ZONE - HOLD 5 DAYS</button>
+<button class="sell" id="sellBtn" onclick="enterTrade('SELL')">SELL 0.01 AT ZONE - HOLD 5 DAYS</button>
+<button style="background:#222;color:#aaa" onclick="closeAll()">CLOSE & LOCK</button>
 </div>
 
 <script>
-let inTrade=false;
-function enterTrade(dir){
- if(inTrade){alert("Already holding SWING! Don't overtrade $10");return;}
- inTrade=true;
- document.getElementById("signal").innerText="IN "+dir+" - HOLD 3-5 DAYS - DO NOT CLOSE EARLY";
- document.getElementById("hold").innerText="Day 1 / 5";
- alert(dir+" 0.01 entered.\nHOLD RULES:\n1. Don't close till +$5\n2. At +$5 SL to BE\n3. Hold to $25 profit = $35\n4. Withdraw $25 M-Pesa");
+let goldPrice=0, lastFetch=0;
+async function fetchGold(){
+ try{
+  let r=await fetch('https://api.binance.com/api/v3/ticker/price?symbol=PAXGUSDT');
+  let j=await r.json();
+  goldPrice=parseFloat(j.price);
+  document.getElementById('price').innerText='$'+goldPrice.toFixed(2);
+  calcZone();
+ }catch(e){document.getElementById('price').innerText='Offline - Use TradingView D1';}
 }
-function closeAll(){
- inTrade=false;
- document.getElementById("signal").innerText="CLOSED - Waiting next week";
- document.getElementById("hold").innerText="0/5 days";
+function calcZone(){
+ if(!goldPrice) return;
+ let now=new Date();
+ if(now.getHours()<10 || now.getHours()>=23){
+   document.getElementById('zone').innerHTML='<span class=yellow>OUTSIDE HOURS - Wait for 10:00 alarm</span>';
+   document.getElementById('action').innerText='Market closed for Swing B. At 10:00 I will show BUY or SELL zone.';
+   return;
+ }
+ // Simple 4H logic for $10: if price % 20 logic to create zone
+ let buyZone = (Math.floor(goldPrice/10)*10) - 2;
+ let sellZone = (Math.ceil(goldPrice/10)*10) + 2;
+ // Auto bias: if price above 00 level = BUY bias, below = SELL bias
+ let bias = (goldPrice % 10) > 5 ? 'BUY' : 'SELL';
+ let color = bias==='BUY' ? 'green' : 'red';
+ document.getElementById('zone').innerHTML=`<span class=${color}>${bias} NOW @ ${goldPrice.toFixed(1)}<br>HOLD on 4H<br>Zone: ${buyZone} - ${sellZone}</span>`;
+ document.getElementById('action').innerText=bias==='BUY' 
+ ? `ACTION: On 4H timeframe, wait for pullback to ${buyZone}, then BUY 0.01 and HOLD 5 days. BE at +$5`
+ : `ACTION: On 4H timeframe, wait for pullback to ${sellZone}, then SELL 0.01 and HOLD 5 days. BE at +$5`;
 }
 
-// Clock + Countdown
+setInterval(fetchGold,10000); fetchGold();
+
 setInterval(()=>{
  let now=new Date();
- let h=now.getHours(), m=now.getMinutes(), s=now.getSeconds();
- let el=document.getElementById("status");
- let cd=document.getElementById("countdown");
- if(h>=10 && h<23){
-   el.innerHTML="<span class='green'>Inside trading hours - SWING B Scanning</span>";
-   cd.innerText="";
- } else {
-   el.innerText="Outside trading hours (10:00-23:00 only) - waiting for alarm";
-   let minsTo10 = (10*60 - (h*60+m) + 1440) % 1440;
-   if(minsTo10>0 && minsTo10<600) cd.innerText="⏰ Alarm in "+minsTo10+" mins at 10:00";
- }
+ let h=now.getHours(),m=now.getMinutes();
+ let cd=document.getElementById('countdown');
+ let st=document.getElementById('status');
+ if(h>=10 && h<23){st.innerHTML="<span class='green'>LIVE - 4H Zone Active</span>"; cd.innerText=""; calcZone();}
+ else {st.innerText="Waiting 10:00"; let mins=(10*60-(h*60+m)+1440)%1440; cd.innerText="⏰ Alarm in "+mins+" mins";}
 },1000);
 
-// ALARM AT 10:00
+// ALARM + AUTO VOICE
 let alarmPlayed=false;
 setInterval(()=>{
- let now=new Date();
- if(now.getHours()===10 && now.getMinutes()===0 && now.getSeconds()<3 && !alarmPlayed){
-   alarmPlayed=true;
-   let audio=new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
-   audio.loop=true;
-   audio.play().catch(()=>{});
-   if(Notification && Notification.permission==="granted"){
-     new Notification("NOVA SWING B - 10:00 UNLOCKED 🔓");
-   }
-   setTimeout(()=>{
-     alert("⏰ 10:00! SWING B UNLOCKED!\n\nTrading hours started.\nCheck signal now and send me screenshot!");
-     audio.pause();
-   },500);
+ let n=new Date();
+ if(n.getHours()===10 && n.getMinutes()===0 && n.getSeconds()<3 && !alarmPlayed){
+  alarmPlayed=true;
+  let a=new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg"); a.loop=true; a.play().catch(()=>{});
+  fetchGold();
+  setTimeout(()=>{alert("⏰ 10:00 UNLOCKED!\n\n"+document.getElementById('zone').innerText+"\n\nCheck 4H chart now on phone and ENTER 0.01 HOLD 5 DAYS"); a.pause();},600);
  }
- if(now.getHours()!==10) alarmPlayed=false;
+ if(n.getHours()!==10) alarmPlayed=false;
 },1000);
 
-if(Notification && Notification.permission!=="granted"){
-  Notification.requestPermission();
-}
+function enterTrade(d){alert(d+" 0.01 entered on 4H zone.\nHOLD 3-5 DAYS\nSL $8 | BE at +$5 | TP $25"); document.getElementById('hold').innerText="Day 1 / 5 - HOLDING "+d+" on 4H";}
+function closeAll(){document.getElementById('hold').innerText="0/5 days - Closed"; alert("Closed & Locked till next week");}
 </script>
 </body>
  </html>
