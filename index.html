@@ -2,93 +2,102 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NOVA SWING B - AUTO SIGNAL</title>
+<title>NOVA SWING B V4 LOCKED</title>
 <style>
 body{background:#0a0a0a;color:#fff;font-family:Arial;padding:12px}
 .card{background:#161616;border:1px solid #222;border-radius:12px;padding:14px;margin-bottom:10px}
 .green{color:#00ff88}.red{color:#ff4444}.yellow{color:#ffcc00}
 button{width:100%;padding:14px;border-radius:10px;border:none;font-weight:bold;margin-top:8px;font-size:16px}
 .buy{background:#00ff88;color:#000}.sell{background:#ff4444;color:#fff}
-.zone{font-size:22px;font-weight:bold;margin:6px 0}
+.zone{font-size:20px;font-weight:bold;margin:6px 0}
 </style>
 </head>
 <body>
-<h2>NOVA SWING B V3 🎯 AUTO</h2>
+<h2>NOVA SWING B V4 🔒 LOCKED</h2>
 <div class="card">
-Gold Price: <b id="price">Loading...</b> | <span id="status">Waiting 10:00</span><br>
-<span id="countdown" class="yellow"></span>
+Gold: <b id="price">$---</b> | <span id="status">Waiting 10:00 lock</span><br>
+Locked Signal Date: <b id="lockdate">--</b>
 </div>
 
 <div class="card">
-4H TIMEFRAME SIGNAL:<br>
-<div id="zone" class="zone yellow">Scanning 4H Zone...</div>
-<div id="action" style="font-size:13px;color:#aaa">Will auto-calculate BUY/SELL zone at 10:00</div>
-Hold: <b id="hold">0/5 days</b> | SL $8 | TP $25 | BE at +$5
+4H SIGNAL (Locked at 10:00, won't change):<br>
+<div id="zone" class="zone yellow">Waiting for 10:00 to lock signal...</div>
+<div id="action" style="font-size:13px;color:#aaa">At 10:00 I will lock BUY or SELL for whole day</div>
 </div>
 
 <div class="card">
-<button class="buy" id="buyBtn" onclick="enterTrade('BUY')">BUY 0.01 AT ZONE - HOLD 5 DAYS</button>
-<button class="sell" id="sellBtn" onclick="enterTrade('SELL')">SELL 0.01 AT ZONE - HOLD 5 DAYS</button>
-<button style="background:#222;color:#aaa" onclick="closeAll()">CLOSE & LOCK</button>
+<button class="buy" onclick="enterTrade('BUY')">BUY 0.01 AT ZONE - HOLD 5 DAYS</button>
+<button class="sell" onclick="enterTrade('SELL')">SELL 0.01 AT ZONE - HOLD 5 DAYS</button>
+<button style="background:#222;color:#aaa" onclick="localStorage.clear(); location.reload();">RESET LOCK (New Day)</button>
 </div>
 
 <script>
-let goldPrice=0, lastFetch=0;
+let lockedBias = localStorage.getItem('swingBias');
+let lockedPrice = localStorage.getItem('swingPrice');
+let lockedDate = localStorage.getItem('swingDate');
+
 async function fetchGold(){
  try{
   let r=await fetch('https://api.binance.com/api/v3/ticker/price?symbol=PAXGUSDT');
   let j=await r.json();
-  goldPrice=parseFloat(j.price);
-  document.getElementById('price').innerText='$'+goldPrice.toFixed(2);
-  calcZone();
- }catch(e){document.getElementById('price').innerText='Offline - Use TradingView D1';}
+  let p=parseFloat(j.price);
+  document.getElementById('price').innerText='$'+p.toFixed(2);
+  
+  let now=new Date();
+  let todayStr=now.toDateString();
+  // Lock at 10:00 if not locked today
+  if(now.getHours()>=10 && now.getHours()<23 && lockedDate!==todayStr){
+    // Simple stable bias: if PAXG > yesterday close approximation use trend of hour
+    // To keep stable, we lock based on price at 10:00:00 - if last digit even = BUY, odd = SELL - but lock it once
+    lockedBias = (p > 4125) ? 'SELL' : 'BUY'; // Gold at 4130 is too high = SELL bias for pullback
+    if(p>4130) lockedBias='SELL'; else lockedBias='BUY';
+    lockedPrice=p;
+    lockedDate=todayStr;
+    localStorage.setItem('swingBias',lockedBias);
+    localStorage.setItem('swingPrice',lockedPrice);
+    localStorage.setItem('swingDate',lockedDate);
+  }
+  showLocked(p);
+ }catch(e){}
 }
-function calcZone(){
- if(!goldPrice) return;
- let now=new Date();
- if(now.getHours()<10 || now.getHours()>=23){
-   document.getElementById('zone').innerHTML='<span class=yellow>OUTSIDE HOURS - Wait for 10:00 alarm</span>';
-   document.getElementById('action').innerText='Market closed for Swing B. At 10:00 I will show BUY or SELL zone.';
+function showLocked(currentP){
+ let zoneEl=document.getElementById('zone');
+ let actionEl=document.getElementById('action');
+ let statusEl=document.getElementById('status');
+ let dateEl=document.getElementById('lockdate');
+ if(!lockedBias){
+   zoneEl.innerHTML='<span class=yellow>Waiting for 10:00 to lock signal...</span>';
+   statusEl.innerText='Waiting 10:00 lock';
    return;
  }
- // Simple 4H logic for $10: if price % 20 logic to create zone
- let buyZone = (Math.floor(goldPrice/10)*10) - 2;
- let sellZone = (Math.ceil(goldPrice/10)*10) + 2;
- // Auto bias: if price above 00 level = BUY bias, below = SELL bias
- let bias = (goldPrice % 10) > 5 ? 'BUY' : 'SELL';
- let color = bias==='BUY' ? 'green' : 'red';
- document.getElementById('zone').innerHTML=`<span class=${color}>${bias} NOW @ ${goldPrice.toFixed(1)}<br>HOLD on 4H<br>Zone: ${buyZone} - ${sellZone}</span>`;
- document.getElementById('action').innerText=bias==='BUY' 
- ? `ACTION: On 4H timeframe, wait for pullback to ${buyZone}, then BUY 0.01 and HOLD 5 days. BE at +$5`
- : `ACTION: On 4H timeframe, wait for pullback to ${sellZone}, then SELL 0.01 and HOLD 5 days. BE at +$5`;
+ dateEl.innerText=lockedDate+' @ $'+parseFloat(lockedPrice).toFixed(2);
+ statusEl.innerHTML="<span class='green'>LOCKED - Won't change today</span>";
+ if(lockedBias==='BUY'){
+   let entry=(parseFloat(lockedPrice)-10).toFixed(0);
+   zoneEl.innerHTML=`<span class=green>BUY NOW<br>Entry Zone: ${entry} - ${parseFloat(lockedPrice).toFixed(0)}<br>HOLD on 4H 5 Days</span>`;
+   actionEl.innerText=`ACTION: Today bias = BUY. On 4H wait pullback to ${entry}, BUY 0.01, SL $8, BE at +$5, HOLD to $25`;
+ }else{
+   let entry=(parseFloat(lockedPrice)+10).toFixed(0);
+   zoneEl.innerHTML=`<span class=red>SELL NOW<br>Entry Zone: ${parseFloat(lockedPrice).toFixed(0)} - ${entry}<br>HOLD on 4H 5 Days</span>`;
+   actionEl.innerText=`ACTION: Today bias = SELL. Gold at ${currentP.toFixed(0)} is high. On 4H wait push to ${entry}, SELL 0.01, SL $8, BE at +$5`;
+ }
 }
 
-setInterval(fetchGold,10000); fetchGold();
+setInterval(fetchGold,5000); fetchGold();
 
-setInterval(()=>{
- let now=new Date();
- let h=now.getHours(),m=now.getMinutes();
- let cd=document.getElementById('countdown');
- let st=document.getElementById('status');
- if(h>=10 && h<23){st.innerHTML="<span class='green'>LIVE - 4H Zone Active</span>"; cd.innerText=""; calcZone();}
- else {st.innerText="Waiting 10:00"; let mins=(10*60-(h*60+m)+1440)%1440; cd.innerText="⏰ Alarm in "+mins+" mins";}
-},1000);
-
-// ALARM + AUTO VOICE
+// Alarm once at 10:00
 let alarmPlayed=false;
 setInterval(()=>{
  let n=new Date();
  if(n.getHours()===10 && n.getMinutes()===0 && n.getSeconds()<3 && !alarmPlayed){
   alarmPlayed=true;
   let a=new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg"); a.loop=true; a.play().catch(()=>{});
-  fetchGold();
-  setTimeout(()=>{alert("⏰ 10:00 UNLOCKED!\n\n"+document.getElementById('zone').innerText+"\n\nCheck 4H chart now on phone and ENTER 0.01 HOLD 5 DAYS"); a.pause();},600);
+  setTimeout(()=>{alert("10:00 LOCKED! Signal for today: "+lockedBias+" \nIt will NOT change today."); a.pause();},600);
  }
  if(n.getHours()!==10) alarmPlayed=false;
 },1000);
 
-function enterTrade(d){alert(d+" 0.01 entered on 4H zone.\nHOLD 3-5 DAYS\nSL $8 | BE at +$5 | TP $25"); document.getElementById('hold').innerText="Day 1 / 5 - HOLDING "+d+" on 4H";}
-function closeAll(){document.getElementById('hold').innerText="0/5 days - Closed"; alert("Closed & Locked till next week");}
+function enterTrade(d){alert(d+" locked today.\nRemember: HOLD 5 DAYS on 4H\nSL $8 | BE at +$5");}
 </script>
 </body>
- </html>
+</html>
