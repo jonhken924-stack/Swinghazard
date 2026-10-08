@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NOVA SWING B V4 LOCKED</title>
+<title>NOVA SWING B V5 NOTIFY</title>
 <style>
 body{background:#0a0a0a;color:#fff;font-family:Arial;padding:12px}
 .card{background:#161616;border:1px solid #222;border-radius:12px;padding:14px;margin-bottom:10px}
@@ -13,91 +13,94 @@ button{width:100%;padding:14px;border-radius:10px;border:none;font-weight:bold;m
 </style>
 </head>
 <body>
-<h2>NOVA SWING B V4 🔒 LOCKED</h2>
+<h2>NOVA SWING B V5 🔔 NOTIFY</h2>
 <div class="card">
-Gold: <b id="price">$---</b> | <span id="status">Waiting 10:00 lock</span><br>
-Locked Signal Date: <b id="lockdate">--</b>
+Gold: <b id="price">$---</b> | <span id="status">--</span><br>
+Locked: <b id="lockdate">--</b><br>
+<button style="background:#ffcc00;color:#000;padding:8px;font-size:13px" onclick="enableNotify()">🔔 ENABLE NOTIFICATION SOUND</button>
+<div id="notifStatus" style="font-size:12px;color:#aaa;margin-top:4px">Tap enable to get alert at entry</div>
 </div>
 
 <div class="card">
-4H SIGNAL (Locked at 10:00, won't change):<br>
-<div id="zone" class="zone yellow">Waiting for 10:00 to lock signal...</div>
-<div id="action" style="font-size:13px;color:#aaa">At 10:00 I will lock BUY or SELL for whole day</div>
+<div id="zone" class="zone yellow">Waiting 10:00 lock...</div>
+<div id="action" style="font-size:13px;color:#aaa"></div>
+<div id="liveDist" style="font-size:13px;margin-top:6px;color:#888"></div>
 </div>
 
 <div class="card">
-<button class="buy" onclick="enterTrade('BUY')">BUY 0.01 AT ZONE - HOLD 5 DAYS</button>
-<button class="sell" onclick="enterTrade('SELL')">SELL 0.01 AT ZONE - HOLD 5 DAYS</button>
-<button style="background:#222;color:#aaa" onclick="localStorage.clear(); location.reload();">RESET LOCK (New Day)</button>
+<button class="buy" onclick="enterTrade('BUY')">BUY 0.01 AT ZONE</button>
+<button class="sell" onclick="enterTrade('SELL')">SELL 0.01 AT ZONE</button>
+<button style="background:#222;color:#aaa" onclick="localStorage.clear();location.reload();">RESET LOCK</button>
 </div>
 
 <script>
-let lockedBias = localStorage.getItem('swingBias');
-let lockedPrice = localStorage.getItem('swingPrice');
-let lockedDate = localStorage.getItem('swingDate');
+let lockedBias=localStorage.getItem('swingBias');
+let lockedPrice=localStorage.getItem('swingPrice');
+let lockedDate=localStorage.getItem('swingDate');
+let notifyEnabled=false, entryHit=false, audioCtx;
+
+function enableNotify(){
+ notifyEnabled=true;
+ if("Notification" in window) Notification.requestPermission();
+ document.getElementById('notifStatus').innerText='✅ Notifications ENABLED - I will alarm at entry zone';
+ // unlock audio
+ let a=new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg"); a.play().then(()=>a.pause()).catch(()=>{});
+ if(navigator.vibrate) navigator.vibrate(100);
+ alert("✅ Alert enabled! Leave this tab open in background. When Gold hits 4133-4143 it will RING + VIBRATE + NOTIFY you.");
+}
+
+function triggerEntryAlert(current, zoneText){
+ if(entryHit) return; entryHit=true;
+ // Sound loop
+ let alarm=new Audio("https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg"); alarm.loop=true; alarm.play().catch(()=>{});
+ // Vibrate
+ if(navigator.vibrate) navigator.vibrate([500,200,500,200,1000]);
+ // Browser notification
+ if("Notification" in window && Notification.permission==="granted"){
+   new Notification("🔔 NOVA SELL ENTRY HIT!", {body:`Gold at $${current.toFixed(2)} is in zone ${zoneText}. Open FBS and SELL 0.01 NOW!`, requireInteraction:true});
+ }
+ // Visual alert
+ document.body.style.background="#440000";
+ alert(`🔔🔔🔔 ENTRY HIT!\n\nGold: $${current.toFixed(2)}\nZone: ${zoneText}\n\nACTION NOW:\n1. Open FBS\n2. SELL 0.01 at this price\n3. SL $8 at 4143\n\nTap OK to stop alarm`);
+ alarm.pause(); alarm.loop=false;
+ document.body.style.background="#0a0a0a";
+}
 
 async function fetchGold(){
- try{
-  let r=await fetch('https://api.binance.com/api/v3/ticker/price?symbol=PAXGUSDT');
-  let j=await r.json();
-  let p=parseFloat(j.price);
-  document.getElementById('price').innerText='$'+p.toFixed(2);
-  
-  let now=new Date();
-  let todayStr=now.toDateString();
-  // Lock at 10:00 if not locked today
-  if(now.getHours()>=10 && now.getHours()<23 && lockedDate!==todayStr){
-    // Simple stable bias: if PAXG > yesterday close approximation use trend of hour
-    // To keep stable, we lock based on price at 10:00:00 - if last digit even = BUY, odd = SELL - but lock it once
-    lockedBias = (p > 4125) ? 'SELL' : 'BUY'; // Gold at 4130 is too high = SELL bias for pullback
-    if(p>4130) lockedBias='SELL'; else lockedBias='BUY';
-    lockedPrice=p;
-    lockedDate=todayStr;
-    localStorage.setItem('swingBias',lockedBias);
-    localStorage.setItem('swingPrice',lockedPrice);
-    localStorage.setItem('swingDate',lockedDate);
-  }
-  showLocked(p);
- }catch(e){}
+ let p=0;
+ try{let r=await fetch('https://api.gold-api.com/price/XAU'); let j=await r.json(); p=j.price;}catch(e){}
+ if(!p){try{let r=await fetch('https://api.binance.com/api/v3/ticker/price?symbol=PAXGUSDT'); let j=await r.json(); p=parseFloat(j.price);}catch(e){}}
+ if(p){
+   document.getElementById('price').innerText='$'+p.toFixed(2);
+   let now=new Date(); let todayStr=now.toDateString();
+   if(now.getHours()>=10 && lockedDate!==todayStr){
+     lockedBias=p>4130?'SELL':'BUY'; lockedPrice=p; lockedDate=todayStr;
+     localStorage.setItem('swingBias',lockedBias); localStorage.setItem('swingPrice',lockedPrice); localStorage.setItem('swingDate',lockedDate); entryHit=false;
+   }
+   showLocked(p);
+   checkEntry(p);
+ }
 }
 function showLocked(currentP){
  let zoneEl=document.getElementById('zone');
- let actionEl=document.getElementById('action');
- let statusEl=document.getElementById('status');
- let dateEl=document.getElementById('lockdate');
- if(!lockedBias){
-   zoneEl.innerHTML='<span class=yellow>Waiting for 10:00 to lock signal...</span>';
-   statusEl.innerText='Waiting 10:00 lock';
-   return;
- }
- dateEl.innerText=lockedDate+' @ $'+parseFloat(lockedPrice).toFixed(2);
- statusEl.innerHTML="<span class='green'>LOCKED - Won't change today</span>";
- if(lockedBias==='BUY'){
-   let entry=(parseFloat(lockedPrice)-10).toFixed(0);
-   zoneEl.innerHTML=`<span class=green>BUY NOW<br>Entry Zone: ${entry} - ${parseFloat(lockedPrice).toFixed(0)}<br>HOLD on 4H 5 Days</span>`;
-   actionEl.innerText=`ACTION: Today bias = BUY. On 4H wait pullback to ${entry}, BUY 0.01, SL $8, BE at +$5, HOLD to $25`;
- }else{
-   let entry=(parseFloat(lockedPrice)+10).toFixed(0);
-   zoneEl.innerHTML=`<span class=red>SELL NOW<br>Entry Zone: ${parseFloat(lockedPrice).toFixed(0)} - ${entry}<br>HOLD on 4H 5 Days</span>`;
-   actionEl.innerText=`ACTION: Today bias = SELL. Gold at ${currentP.toFixed(0)} is high. On 4H wait push to ${entry}, SELL 0.01, SL $8, BE at +$5`;
+ if(!lockedBias){zoneEl.innerHTML='<span style=color:#ffcc00>Waiting 10:00 lock...</span>'; return;}
+ document.getElementById('lockdate').innerText=lockedDate+' @ $'+parseFloat(lockedPrice).toFixed(0);
+ document.getElementById('status').innerHTML="<span style=color:#00ff88>LOCKED</span>";
+ let low=parseFloat(lockedPrice).toFixed(0), high=(parseFloat(lockedPrice)+10).toFixed(0);
+ if(lockedBias==='BUY'){low=(parseFloat(lockedPrice)-10).toFixed(0); high=parseFloat(lockedPrice).toFixed(0);}
+ zoneEl.innerHTML=`<span style=color:${lockedBias==='BUY'?'#00ff88':'#ff4444'}>${lockedBias} NOW<br>Entry Zone: ${low} - ${high}<br>HOLD 4H 5 Days</span>`;
+ document.getElementById('action').innerText=`ACTION: Wait push to ${high}, ${lockedBias} 0.01, SL $8, BE at +$5`;
+ document.getElementById('liveDist').innerText=`Live: $${currentP.toFixed(2)} | Distance to entry: $${(high - currentP).toFixed(2)} away`;
+}
+function checkEntry(currentP){
+ if(!lockedBias || !notifyEnabled) return;
+ let low=parseFloat(lockedPrice), high=parseFloat(lockedPrice)+10;
+ if(lockedBias==='BUY'){low=parseFloat(lockedPrice)-10; high=parseFloat(lockedPrice);}
+ if(currentP>=low && currentP<=high){
+   triggerEntryAlert(currentP, `${low.toFixed(0)}-${high.toFixed(0)}`);
  }
 }
-
-setInterval(fetchGold,5000); fetchGold();
-
-// Alarm once at 10:00
-let alarmPlayed=false;
-setInterval(()=>{
- let n=new Date();
- if(n.getHours()===10 && n.getMinutes()===0 && n.getSeconds()<3 && !alarmPlayed){
-  alarmPlayed=true;
-  let a=new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg"); a.loop=true; a.play().catch(()=>{});
-  setTimeout(()=>{alert("10:00 LOCKED! Signal for today: "+lockedBias+" \nIt will NOT change today."); a.pause();},600);
- }
- if(n.getHours()!==10) alarmPlayed=false;
-},1000);
-
-function enterTrade(d){alert(d+" locked today.\nRemember: HOLD 5 DAYS on 4H\nSL $8 | BE at +$5");}
+setInterval(fetchGold,3000); fetchGold();
 </script>
 </body>
 </html>
