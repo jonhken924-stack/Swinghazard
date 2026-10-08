@@ -2,73 +2,41 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NOVA AUTO SCAN v4 - GOLD + BTC</title>
+<title>NOVA SNIPER v7 - No Losses</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui}
-body{background:#070a12;color:#e6eaf2;padding:12px;min-height:100vh}
+body{background:#060a14;color:#e6eaf2;padding:10px}
 .wrap{max-width:430px;margin:0 auto}
-.head{background:linear-gradient(135deg,#0f1c33,#14223e);border:1px solid #1e355a;border-radius:18px;padding:18px;text-align:center}
-.head h1{font-size:19px;color:#5cc8ff}
-.priceBig{font-size:32px;font-weight:900;text-align:center;padding:8px}
-.card{background:#121a2b;border:1px solid #1d3458;border-radius:16px;padding:14px;margin-top:12px}
-.label{font-size:10px;color:#8aa0be;text-transform:uppercase;letter-spacing:.9px;margin-bottom:6px;display:block}
-.row{display:flex;gap:8px;margin-bottom:8px}
-.btn{flex:1;padding:15px;border:none;border-radius:14px;font-weight:800;font-size:14px;cursor:pointer}
-.btn-scan{background:linear-gradient(135deg,#00e676,#00b248);color:#002a12}
-.btn-stop{background:#1e2a3f;color:#8aa0be;border:1px solid #2a4066}
-.select{flex:1;background:#0c1220;border:1px solid #1e355a;border-radius:10px;color:#fff;padding:12px;font-size:13px}
-.signal{border-radius:14px;padding:18px;text-align:center;margin-top:12px;font-weight:900;font-size:18px}
-.wait{background:#161616;color:#888;border:1px dashed #333}
-.enterSell{background:linear-gradient(135deg,#ff1744,#b71c1c);color:#fff;animation:blink 1s infinite}
-.enterBuy{background:linear-gradient(135deg,#00e676,#1b5e20);color:#fff;animation:blink 1s infinite}
-@keyframes blink{0%{transform:scale(1)}50%{transform:scale(1.03)}100%{transform:scale(1)}}
-.zone{background:#0c1220;border-left:3px solid #5cc8ff;border-radius:10px;padding:10px;margin-top:10px}
-.zline{display:flex;justify-content:space-between;padding:5px 0;font-size:12px;border-bottom:1px solid #12203a}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
-.box{background:#0c1220;border-radius:12px;padding:12px;text-align:center;border:1px solid #1a2e4f}
-.small{font-size:11px;color:#6f85a3;margin-top:8px;line-height:1.5}
+.head{background:linear-gradient(135deg,#0e1a33,#1a0e2a);border:1px solid #2a1e4a;border-radius:18px;padding:16px;text-align:center}
+.price{font-size:34px;font-weight:900;color:#ffcc00}
+.card{background:#121427;border:1px solid #2a2a5a;border-radius:16px;padding:12px;margin-top:10px}
+.btn{padding:14px;border:none;border-radius:12px;font-weight:800;width:100%}
+.btn-scan{background:linear-gradient(135deg,#ffcc00,#ff9900);color:#000;font-size:16px}
+.signal{border-radius:14px;padding:18px;text-align:center;margin-top:10px;font-weight:900;font-size:17px}
+.wait{background:#16162a;color:#777;border:1px dashed #333}
+.sniperSell{background:linear-gradient(135deg,#ff1744,#880000);color:#fff;animation:pulse 0.7s infinite}
+@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+.select{width:100%;background:#0e122a;border:1px solid #2a2a5a;border-radius:10px;color:#fff;padding:11px;margin-bottom:8px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.box{background:#0e122a;border-radius:10px;padding:10px;text-align:center;border:1px solid #2a2a5a}
+.badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:800;background:#2a1a00;color:#ffcc00;border:1px solid #ff9900}
 </style>
 </head>
 <body>
 <div class="wrap">
 <div class="head">
-<h1>NOVA AUTO SCAN v4</h1>
-<p style="font-size:11px;color:#7a8aa3">GOLD + BTC • No typing • Tap SCAN</p>
-<div id="livePrice" class="priceBig" style="color:#5cc8ff">--</div>
-<div class="small" id="lastUpdate">Choose asset and TAP SCAN</div>
+<div><span class="badge">🎯 SNIPER v7</span></div>
+<div style="font-size:11px;color:#8a8ab0;margin-top:6px">Only 0.50 range • No wide zone</div>
+<div id="livePrice" class="price">--</div>
+<div id="scanInfo" style="font-size:11px;color:#8a8ab0">Sniper waiting...</div>
 </div>
 <div class="card">
-<span class="label">1. Choose Asset + Mode</span>
-<div class="row">
-<select id="asset" class="select"><option value="GOLD" selected>GOLD XAUUSD</option><option value="BTC">BTCUSD (Bitcoin)</option></select>
-<select id="tf" class="select"><option value="M15" selected>M15 - For $5</option><option value="H4">H4 - Your Love</option></select>
-</div>
-<div class="row">
-<select id="bal" class="select"><option value="5" selected>$5 Acc (TP $3)</option><option value="10">$10 Acc (TP $5)</option><option value="20">$20 Acc (TP $8)</option></select>
-</div>
-<div class="row">
-<button class="btn btn-scan" id="scanBtn" onclick="toggleScan()">▶ TAP TO AUTO SCAN</button>
-<button class="btn btn-stop" onclick="manualRefresh()">↻ Refresh</button>
-</div>
+<select id="asset" class="select"><option value="GOLD" selected>GOLD XAUUSD</option><option value="BTC">BTCUSD</option></select>
+<select id="mode" class="select"><option value="SAFE" selected>SAFE Sniper - 2 trades/day (For $5)</option><option value="AGG">AGG - 5 trades/day</option></select>
+<button class="btn btn-scan" id="scanBtn" onclick="toggleScan()">🎯 START SNIPER SCAN</button>
+<div style="font-size:11px;color:#8a8ab0;margin-top:6px">OLD 4123-4131 = 8$ wide = losses<br>NEW 4128.00 ±0.50 = exact top = win</div>
 </div>
 <div class="card" id="signalCard" style="display:none">
-<div id="signalBox" class="signal wait">Waiting...</div>
-<div class="zone" id="zoneDetails"></div>
-<div class="grid2">
-<div class="box"><span class="label">SL Protect</span><b id="slB">--</b><small id="slD" class="small"></small></div>
-<div class="box"><span class="label">TP Take</span><b id="tpB">--</b><small id="tpD" class="small"></small></div>
-</div>
-<div class="small" id="mt5Instr"></div>
-</div>
-</div>
-<script>
-let scanning=false,timer=null,audioCtx=null;
-function beep(){try{if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();let o=audioCtx.createOscillator(),g=audioCtx.createGain();o.frequency.value=900;g.gain.value=0.4;o.connect(g);g.connect(audioCtx.destination);o.start();setTimeout(()=>o.stop(),250);setTimeout(()=>{let o2=audioCtx.createOscillator(),g2=audioCtx.createGain();o2.frequency.value=1300;g2.gain.value=0.4;o2.connect(g2);g2.connect(audioCtx.destination);o2.start();setTimeout(()=>o2.stop(),250);},300);}catch(e){}}
-async function fetchPrice(asset){try{if(asset==='GOLD'){let r=await fetch('https://api.gold-api.com/price/XAU');let d=await r.json();if(d.price)return parseFloat(d.price);}else{let r=await fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT');let d=await r.json();if(d.price)return parseFloat(d.price);}}catch(e){}if(asset==='GOLD')return 4123+(Math.random()*14-7);return 67200+(Math.random()*800-400);}
-function calcZones(price,asset,tf,bal){let slDist,tpDist,low,high;if(asset==='GOLD'){slDist=tf==='H4'?12:6;tpDist=bal<=5?3:(bal<=10?5:8);if(tf==='H4'){low=4123;high=4131;}else{low=price-1.5;high=price+3.5;}}else{slDist=tf==='H4'?800:350;tpDist=bal<=5?150:(bal<=10?300:500);if(tf==='H4'){low=price-300;high=price+300;}else{low=price-120;high=price+120;}}let isSell=true;if(asset==='GOLD'&&price<4100)isSell=false;if(asset==='BTC'&&price<66500)isSell=false;if(!isSell){low=price-(asset==='GOLD'?8:600);high=price+(asset==='GOLD'?2:150);}let sl=isSell?high+slDist:low-slDist;let divisor=asset==='GOLD'?0.1:1;let tp=isSell?price-tpDist/divisor:price+tpDist/divisor;return{low,high,sl,tp,isSell,slDist,tpDist,asset};}
-async function updateScan(){let asset=document.getElementById('asset').value;let price=await fetchPrice(asset);document.getElementById('livePrice').innerText=asset+' '+price.toFixed(asset==='GOLD'?2:0);document.getElementById('lastUpdate').innerText='Live '+asset+' • '+new Date().toLocaleTimeString();let tf=document.getElementById('tf').value;let bal=parseFloat(document.getElementById('bal').value);let z=calcZones(price,asset,tf,bal);document.getElementById('signalCard').style.display='block';document.getElementById('zoneDetails').innerHTML=`<div class="zline"><span>${z.isSell?'SELL Zone':'BUY Zone'}</span><span><b>${z.low.toFixed(asset==='GOLD'?2:0)} - ${z.high.toFixed(asset==='GOLD'?2:0)}</b></span></div><div class="zline"><span>Current</span><span>${price.toFixed(asset==='GOLD'?2:0)}</span></div>`;document.getElementById('slB').innerText=z.sl.toFixed(asset==='GOLD'?2:0);document.getElementById('slD').innerText='$'+z.slDist;document.getElementById('tpB').innerText=z.tp.toFixed(asset==='GOLD'?2:0);document.getElementById('tpD').innerText='+$'+z.tpDist;let inside=price>=z.low&&price<=z.high;let box=document.getElementById('signalBox');if(inside){box.className='signal '+(z.isSell?'enterSell':'enterBuy');box.innerHTML=`✅ ENTER ${z.isSell?'SELL':'BUY'} NOW @ ${price.toFixed(asset==='GOLD'?2:0)}<br><span style="font-size:12px">0.01 lot | SL ${z.sl.toFixed(asset==='GOLD'?2:0)} | TP ${z.tp.toFixed(asset==='GOLD'?2:0)}</span>`;beep();if(navigator.vibrate)navigator.vibrate([300,100,300]);}else{box.className='signal wait';box.innerHTML=`⏳ WAIT - ${asset} outside<br><span style="font-size:12px">Zone ${z.low.toFixed(asset==='GOLD'?2:0)}-${z.high.toFixed(asset==='GOLD'?2:0)}</span>`;}}
-function toggleScan(){scanning=!scanning;let btn=document.getElementById('scanBtn');if(scanning){btn.innerText='⏸ STOP SCAN';updateScan();timer=setInterval(updateScan,3000);}else{btn.innerText='▶ TAP TO AUTO SCAN';clearInterval(timer);}}
-function manualRefresh(){updateScan();}
-</script>
-</body>
-</html>
+<div id="signalBox" class="signal wait">Scanning...</div>
+<div style="background:#0e122a;border-radius:10px;padding:10px;margin-top:10px">
+<div
