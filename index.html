@@ -2,47 +2,63 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NOVA V14 SIMPLEST</title>
+<title>NOVA V15 SCAN</title>
 <style>
 body{background:#000;color:#fff;font-family:Arial;padding:10px}
 .card{background:#111;border:1px solid #333;border-radius:10px;padding:12px;margin-bottom:10px;text-align:center}
 input{width:100%;padding:14px;font-size:20px;text-align:center;background:#000;color:#0f0;border:2px solid #0f0;border-radius:8px;box-sizing:border-box}
-button{width:100%;padding:14px;margin-top:8px;background:#ffcc00;color:#000;font-weight:bold;font-size:16px;border-radius:8px;border:0}
+button{width:100%;padding:14px;margin-top:8px;font-weight:bold;font-size:14px;border-radius:8px;border:0}
 </style>
 </head>
 <body>
-<h3 style="text-align:center">NOVA V14 SIMPLE ₿</h3>
+<h3 style="text-align:center">NOVA V15 ₿ SCAN</h3>
 
 <div class="card">
-<div style="color:#888;font-size:11px">LOCKED TODAY - SAME FOR ALL CLIENTS</div>
-<div style="color:#ffcc00;font-size:26px;font-weight:bold">$83093 BUY</div>
-<div style="font-size:11px" id="count">Loading countdown...</div>
+<div style="color:#888;font-size:11px">LOCKED TODAY - NEVER CHANGES</div>
+<div style="color:#ffcc00;font-size:26px;font-weight:bold" id="locked">--</div>
+<div style="font-size:11px" id="count">--</div>
+<button onclick="scanNext()" style="background:#ff4444;color:#fff;margin-top:10px">🔍 SCAN NEXT SIGNAL (ADMIN ONLY)</button>
+<div style="font-size:9px;color:#666;margin-top:4px">Click when TP/SL hit to create new signal for all clients</div>
 </div>
 
-<div class="card" style="background:#0a2a4a;border-color:#26a6ff">🔵 TP2 $83993 RUNNER</div>
-<div class="card" style="background:#0a1a3a;border-color:#26a6ff">🔵 TP1 $83693</div>
-<div class="card" style="background:#332a00;border:2px solid #ffcc00;color:#ffcc00;font-weight:bold;font-size:16px">🟡 BUY ZONE 82893 - 83093</div>
-<div class="card" style="background:#3a0a0a;border-color:#ff4444">🔴 SL $82593</div>
+<div class="card" style="background:#0a2a4a;border-color:#26a6ff" id="tp2">🔵 TP2</div>
+<div class="card" style="background:#0a1a3a;border-color:#26a6ff" id="tp1">🔵 TP1</div>
+<div class="card" style="background:#332a00;border:2px solid #ffcc00;color:#ffcc00;font-weight:bold;font-size:16px" id="entry">🟡 BUY ZONE</div>
+<div class="card" style="background:#3a0a0a;border-color:#ff4444" id="sl">🔴 SL</div>
 
 <div class="card">
 <div style="margin-bottom:6px">Enter FBS price from MT5:</div>
 <input id="p" type="number" placeholder="82892">
-<button onclick="c()">CHECK ZONE</button>
+<button onclick="c()" style="background:#ffcc00;color:#000">CHECK IF INSIDE ZONE</button>
 <div id="r" style="margin-top:12px;font-size:18px;font-weight:bold;min-height:24px"></div>
 </div>
 
-<div class="card" style="font-size:12px;text-align:left">
-BUY 0.01<br>SL 82593 | TP 83693 / 83993<br>BE at +150
-</div>
-
 <script>
+let lp=localStorage.getItem('v7_btcPrice')||'83093';
+let lb=localStorage.getItem('v7_btcBias')||'BUY';
+function refreshDisplay(){
+ let low=parseFloat(lp)-200, high=parseFloat(lp);
+ if(lb!=='BUY'){ low=parseFloat(lp); high=parseFloat(lp)+200; }
+ let sl=lb==='BUY'?low-300:high+300;
+ let tp1=lb==='BUY'?high+600:low-600;
+ let tp2=lb==='BUY'?high+900:low-900;
+ document.getElementById('locked').innerText='$'+lp+' '+lb;
+ document.getElementById('entry').innerText='🟡 '+lb+' ZONE '+low.toFixed(0)+' - '+high.toFixed(0);
+ document.getElementById('sl').innerText='🔴 SL $'+sl.toFixed(0);
+ document.getElementById('tp1').innerText='🔵 TP1 $'+tp1.toFixed(0)+' (+$600)';
+ document.getElementById('tp2').innerText='🔵 TP2 $'+tp2.toFixed(0)+' (+$900 RUNNER)';
+}
+refreshDisplay();
+
 function c(){
  var v=parseFloat(document.getElementById('p').value);
  var r=document.getElementById('r');
- if(!v){ r.innerHTML='Enter price first'; return; }
- if(v>=82893 && v<=83093){ r.innerHTML='<span style="color:#00ff88">✅ BUY NOW - INSIDE ZONE<br>Price '+v+' good!</span>'; }
- else if(v<82893){ r.innerHTML='<span style="color:#ff4444">🔻 BELOW ZONE '+v+'<br>Wait for bounce to 82893</span>'; }
- else { r.innerHTML='<span style="color:#ffcc00">🔺 ABOVE ZONE '+v+'<br>Wait pullback</span>'; }
+ if(!v){ r.innerText='Enter price first'; return; }
+ var low=parseFloat(lp)-200, high=parseFloat(lp);
+ if(lb!=='BUY'){ low=parseFloat(lp); high=parseFloat(lp)+200; }
+ if(v>=low && v<=high){ r.innerHTML='<span style="color:#00ff88">✅ BUY NOW - INSIDE<br>'+v+'</span>'; }
+ else if(v<low){ r.innerHTML='<span style="color:#ff4444">🔻 BELOW '+v+'<br>Wait bounce</span>'; }
+ else { r.innerHTML='<span style="color:#ffcc00">🔺 ABOVE '+v+'<br>Wait pullback - like your 83110 now</span>'; }
 }
 function t(){
  var now=new Date();
@@ -50,9 +66,24 @@ function t(){
  var tom=new Date(eat); tom.setDate(tom.getDate()+1); tom.setHours(10,0,0,0);
  var d=tom-eat;
  var h=Math.floor(d/3600000), m=Math.floor((d%3600000)/60000), s=Math.floor((d%60000)/1000);
- document.getElementById('count').innerHTML='EAT '+eat.toLocaleTimeString()+'<br>Next lock in: '+h+'h '+m+'m '+s+'s - Same for all';
+ document.getElementById('count').innerHTML='EAT '+eat.toLocaleTimeString()+'<br>Next lock in: '+h+'h '+m+'m '+s+'s';
 }
 setInterval(t,1000); t();
+
+function scanNext(){
+ if(!confirm("ADMIN: Scan new signal? All clients will see new zone!")) return;
+ var newP=prompt("Enter new FBS BTC price, e.g 83500","");
+ if(!newP) return;
+ var p=parseFloat(newP);
+ var bias=confirm("OK = BUY, Cancel = SELL") ? "BUY":"SELL";
+ localStorage.setItem('v7_btcPrice',p);
+ localStorage.setItem('v7_btcBias',bias);
+ localStorage.setItem('v7_btcDate',new Date().toDateString());
+ lp=p; lb=bias;
+ refreshDisplay();
+ alert("✅ NEW SIGNAL: $"+p+" "+bias+" - Now reload client page, they see new");
+ location.reload();
+}
 </script>
 </body>
  </html>
