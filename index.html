@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NOVA SWING B - $10 Mode</title>
+<style>
+body{background:#0a0a0a;color:#fff;font-family:Arial;padding:15px}
+.card{background:#161616;border:1px solid #222;border-radius:12px;padding:15px;margin-bottom:12px}
+.green{color:#00ff88}.red{color:#ff4444}
+button{width:100%;padding:14px;border-radius:10px;border:none;font-weight:bold;margin-top:10px;font-size:16px}
+#buyBtn{background:#00ff88;color:#000} #sellBtn{background:#ff4444;color:#fff}
+.lock{background:#222;color:#aaa}
+</style>
+</head>
+<body>
+<h2>NOVA SWING B 🌊 $10</h2>
+<p>Hold 3-5 Days | 1 Trade/Week | Withdraw at $35</p>
+
+<div class="card">
+Start: <b>$10</b> | Now: <b id="bal">$10.00</b><br>
+<span id="status">Outside trading hours (10:00-23:00 only) - waiting</span>
+</div>
+
+<div class="card">
+Daily Move: <b id="daily">Waiting for Daily Close > $15</b><br>
+Signal: <b id="signal" class="green">WAITING WEEKLY SETUP</b><br>
+Hold: <b id="hold">0/5 days</b> | Trail: <b>BE at +$5</b>
+</div>
+
+<div class="card">
+<button id="buyBtn" onclick="enterTrade('BUY')">SWING BUY 0.01 HOLD 5 DAYS</button>
+<button id="sellBtn" onclick="enterTrade('SELL')">SWING SELL 0.01 HOLD 5 DAYS</button>
+<button class="lock" onclick="closeAll()">CLOSE & LOCK</button>
+<div style="font-size:11px;color:#666;margin-top:8px">
+SL $8 | TP $25 | After +$5 profit → SL to BE (free hold) | At $35 → Withdraw $25 M-Pesa
+</div>
+</div>
+
+<script>
+let inTrade=false;
+function enterTrade(dir){
+ if(inTrade){alert("Already holding SWING! Don't overtrade $10");return;}
+ inTrade=true;
+ document.getElementById("signal").innerText="IN "+dir+" - HOLD 3-5 DAYS - DO NOT CLOSE EARLY";
+ document.getElementById("hold").innerText="Day 1 / 5";
+ alert(dir+" 0.01 entered.\nRULE:\n1. Don't close till +$5\n2. At +$5, your SL moves to BE\n3. Hold to $25 profit = $35 balance\n4. Withdraw $25 to M-Pesa");
+}
+function closeAll(){
+ inTrade=false;
+ document.getElementById("signal").innerText="CLOSED - Waiting next week";
+ document.getElementById("hold").innerText="0/5 days";
+}
+setInterval(()=>{
+ let h=new Date().getHours();
+ let el=document.getElementById("status");
+ if(h>=10&&h<23) el.innerHTML="<span class='green'>Inside trading hours - SWING B Scanning</span>";
+ else el.innerText="Outside trading hours (10:00-23:00 only) - waiting";
+},1000);
+</script>
+</body>
+                           </html>
