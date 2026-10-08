@@ -2,105 +2,94 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NOVA SWING B V5 NOTIFY</title>
+<title>NOVA SWING B V6 BTC NOTIFY</title>
 <style>
 body{background:#0a0a0a;color:#fff;font-family:Arial;padding:12px}
 .card{background:#161616;border:1px solid #222;border-radius:12px;padding:14px;margin-bottom:10px}
-.green{color:#00ff88}.red{color:#ff4444}.yellow{color:#ffcc00}
 button{width:100%;padding:14px;border-radius:10px;border:none;font-weight:bold;margin-top:8px;font-size:16px}
 .buy{background:#00ff88;color:#000}.sell{background:#ff4444;color:#fff}
 .zone{font-size:20px;font-weight:bold;margin:6px 0}
 </style>
 </head>
 <body>
-<h2>NOVA SWING B V5 🔔 NOTIFY</h2>
+<h2>NOVA SWING B V6 ₿ BTC NOTIFY</h2>
 <div class="card">
-Gold: <b id="price">$---</b> | <span id="status">--</span><br>
+BTC: <b id="price">$---</b> | <span id="status">--</span><br>
 Locked: <b id="lockdate">--</b><br>
-<button style="background:#ffcc00;color:#000;padding:8px;font-size:13px" onclick="enableNotify()">🔔 ENABLE NOTIFICATION SOUND</button>
-<div id="notifStatus" style="font-size:12px;color:#aaa;margin-top:4px">Tap enable to get alert at entry</div>
+<button style="background:#ffcc00;color:#000;padding:8px;font-size:13px" onclick="enableNotify()">🔔 ENABLE BTC ALARM</button>
+<div id="notifStatus" style="font-size:12px;color:#aaa;margin-top:4px">Tap to get alarm at BTC entry</div>
 </div>
-
 <div class="card">
-<div id="zone" class="zone yellow">Waiting 10:00 lock...</div>
+<div id="zone" class="zone" style="color:#ffcc00">Waiting 10:00 lock...</div>
 <div id="action" style="font-size:13px;color:#aaa"></div>
 <div id="liveDist" style="font-size:13px;margin-top:6px;color:#888"></div>
 </div>
-
 <div class="card">
-<button class="buy" onclick="enterTrade('BUY')">BUY 0.01 AT ZONE</button>
-<button class="sell" onclick="enterTrade('SELL')">SELL 0.01 AT ZONE</button>
+<button class="buy" onclick="enterTrade('BUY')">BUY 0.01 BTC</button>
+<button class="sell" onclick="enterTrade('SELL')">SELL 0.01 BTC</button>
 <button style="background:#222;color:#aaa" onclick="localStorage.clear();location.reload();">RESET LOCK</button>
 </div>
 
 <script>
-let lockedBias=localStorage.getItem('swingBias');
-let lockedPrice=localStorage.getItem('swingPrice');
-let lockedDate=localStorage.getItem('swingDate');
-let notifyEnabled=false, entryHit=false, audioCtx;
+let lockedBias=localStorage.getItem('btcBias');
+let lockedPrice=localStorage.getItem('btcPrice');
+let lockedDate=localStorage.getItem('btcDate');
+let notifyEnabled=false, entryHit=false;
 
 function enableNotify(){
  notifyEnabled=true;
  if("Notification" in window) Notification.requestPermission();
- document.getElementById('notifStatus').innerText='✅ Notifications ENABLED - I will alarm at entry zone';
- // unlock audio
- let a=new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg"); a.play().then(()=>a.pause()).catch(()=>{});
+ document.getElementById('notifStatus').innerText='✅ BTC Alarm ENABLED';
  if(navigator.vibrate) navigator.vibrate(100);
- alert("✅ Alert enabled! Leave this tab open in background. When Gold hits 4133-4143 it will RING + VIBRATE + NOTIFY you.");
+ new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg").play().catch(()=>{});
+ alert("✅ BTC Alarm ON! Will RING when BTC hits entry zone, even while on WhatsApp");
 }
 
-function triggerEntryAlert(current, zoneText){
+function triggerAlert(current, zoneText){
  if(entryHit) return; entryHit=true;
- // Sound loop
  let alarm=new Audio("https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg"); alarm.loop=true; alarm.play().catch(()=>{});
- // Vibrate
- if(navigator.vibrate) navigator.vibrate([500,200,500,200,1000]);
- // Browser notification
+ if(navigator.vibrate) navigator.vibrate([500][200][500][200][1000]);
  if("Notification" in window && Notification.permission==="granted"){
-   new Notification("🔔 NOVA SELL ENTRY HIT!", {body:`Gold at $${current.toFixed(2)} is in zone ${zoneText}. Open FBS and SELL 0.01 NOW!`, requireInteraction:true});
+   new Notification("₿ BTC ENTRY HIT!", {body:`BTC $${current.toFixed(0)} in zone ${zoneText}. Open FBS and TRADE NOW!`, requireInteraction:true});
  }
- // Visual alert
  document.body.style.background="#440000";
- alert(`🔔🔔🔔 ENTRY HIT!\n\nGold: $${current.toFixed(2)}\nZone: ${zoneText}\n\nACTION NOW:\n1. Open FBS\n2. SELL 0.01 at this price\n3. SL $8 at 4143\n\nTap OK to stop alarm`);
- alarm.pause(); alarm.loop=false;
- document.body.style.background="#0a0a0a";
+ alert(`₿ BTC ENTRY HIT!\n\nBTC: $${current.toFixed(0)}\nZone: ${zoneText}\n\nTRADE NOW on FBS\nSL $300 | BE at +$150`);
+ alarm.pause(); document.body.style.background="#0a0a0a";
 }
 
-async function fetchGold(){
+async function fetchBTC(){
  let p=0;
- try{let r=await fetch('https://api.gold-api.com/price/XAU'); let j=await r.json(); p=j.price;}catch(e){}
- if(!p){try{let r=await fetch('https://api.binance.com/api/v3/ticker/price?symbol=PAXGUSDT'); let j=await r.json(); p=parseFloat(j.price);}catch(e){}}
- if(p){
-   document.getElementById('price').innerText='$'+p.toFixed(2);
-   let now=new Date(); let todayStr=now.toDateString();
-   if(now.getHours()>=10 && lockedDate!==todayStr){
-     lockedBias=p>4130?'SELL':'BUY'; lockedPrice=p; lockedDate=todayStr;
-     localStorage.setItem('swingBias',lockedBias); localStorage.setItem('swingPrice',lockedPrice); localStorage.setItem('swingDate',lockedDate); entryHit=false;
-   }
-   showLocked(p);
-   checkEntry(p);
+ try{let r=await fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT'); let j=await r.json(); p=parseFloat(j.price);}catch(e){}
+ if(!p){try{let r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd'); let j=await r.json(); p=j.bitcoin.usd;}catch(e){}}
+ if(!p){document.getElementById('price').innerText='$83k (Offline)'; p=83164;}
+ else document.getElementById('price').innerText='$'+p.toFixed(2);
+
+ let now=new Date(); let todayStr=now.toDateString();
+ if(now.getHours()>=10 && lockedDate!==todayStr){
+   lockedBias = p>83100?'SELL':'BUY';
+   lockedPrice=p; lockedDate=todayStr;
+   localStorage.setItem('btcBias',lockedBias); localStorage.setItem('btcPrice',lockedPrice); localStorage.setItem('btcDate',lockedDate);
+   entryHit=false;
  }
+ showLocked(p);
 }
+
 function showLocked(currentP){
  let zoneEl=document.getElementById('zone');
- if(!lockedBias){zoneEl.innerHTML='<span style=color:#ffcc00>Waiting 10:00 lock...</span>'; return;}
+ if(!lockedBias){zoneEl.innerHTML='Waiting 10:00 lock...'; return;}
  document.getElementById('lockdate').innerText=lockedDate+' @ $'+parseFloat(lockedPrice).toFixed(0);
- document.getElementById('status').innerHTML="<span style=color:#00ff88>LOCKED</span>";
- let low=parseFloat(lockedPrice).toFixed(0), high=(parseFloat(lockedPrice)+10).toFixed(0);
- if(lockedBias==='BUY'){low=(parseFloat(lockedPrice)-10).toFixed(0); high=parseFloat(lockedPrice).toFixed(0);}
- zoneEl.innerHTML=`<span style=color:${lockedBias==='BUY'?'#00ff88':'#ff4444'}>${lockedBias} NOW<br>Entry Zone: ${low} - ${high}<br>HOLD 4H 5 Days</span>`;
- document.getElementById('action').innerText=`ACTION: Wait push to ${high}, ${lockedBias} 0.01, SL $8, BE at +$5`;
- document.getElementById('liveDist').innerText=`Live: $${currentP.toFixed(2)} | Distance to entry: $${(high - currentP).toFixed(2)} away`;
+ document.getElementById('status').innerHTML='<span style=color:#00ff88>LOCKED</span>';
+ let low=parseFloat(lockedPrice), high=parseFloat(lockedPrice)+200;
+ if(lockedBias==='BUY'){low=parseFloat(lockedPrice)-200; high=parseFloat(lockedPrice);}
+ zoneEl.innerHTML=`<span style=color:${lockedBias==='BUY'?'#00ff88':'#ff4444'}>${lockedBias} NOW<br>Entry Zone: ${low.toFixed(0)} - ${high.toFixed(0)}<br>HOLD 4H 3-5 Days</span>`;
+ document.getElementById('action').innerText=`BTC ACTION: SELL/BUY 0.01, SL $300, BE at +$150 profit`;
+ document.getElementById('liveDist').innerText=`Live: $${currentP.toFixed(2)} | Distance: $${(high - currentP).toFixed(0)} away`;
+
+ if(notifyEnabled && currentP>=low && currentP<=high) triggerAlert(currentP, `${low.toFixed(0)}-${high.toFixed(0)}`);
 }
-function checkEntry(currentP){
- if(!lockedBias || !notifyEnabled) return;
- let low=parseFloat(lockedPrice), high=parseFloat(lockedPrice)+10;
- if(lockedBias==='BUY'){low=parseFloat(lockedPrice)-10; high=parseFloat(lockedPrice);}
- if(currentP>=low && currentP<=high){
-   triggerEntryAlert(currentP, `${low.toFixed(0)}-${high.toFixed(0)}`);
- }
-}
-setInterval(fetchGold,3000); fetchGold();
+
+setInterval(fetchBTC,3000); fetchBTC();
+function enterTrade(t){alert(t+" 0.01 BTC at zone, SL $300");}
 </script>
 </body>
 </html>
