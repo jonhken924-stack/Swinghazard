@@ -2,116 +2,77 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NOVA V12 FIXED DISPLAY</title>
+<title>NOVA V13 SIMPLE</title>
 <style>
-body{background:#000;color:#fff;font-family:Arial;padding:8px;margin:0}
-.card{background:#121212;border:1px solid #2a2a2a;border-radius:12px;padding:10px;margin-bottom:10px}
-.chartWrap{position:relative;height:460px;background:#0e0e0e;border:1px solid #333;border-radius:10px;overflow:hidden}
-.box{position:absolute;left:12%;right:18%;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:11px;border-radius:3px}
-.entryBox{border:2px solid #ffcc00;background:rgba(255,204,0,0.2);z-index:3;color:#ffcc00}
-.slBox{background:rgba(255,68,68,0.4);border:1px solid #ff4444;color:#fff;z-index:2}
-.tpBox{background:rgba(38,166,255,0.3);border:1px solid #26a6ff;color:#fff;z-index:2}
-.liveLine{position:absolute;left:0;right:0;height:2px;background:#ffcc00;z-index:5;display:flex;justify-content:space-between;align-items:center;font-size:11px}
-.priceLabel{position:absolute;right:2px;padding:3px 6px;font-size:10px;border-radius:3px;font-weight:bold;transform:translateY(-50%)}
+body{background:#000;color:#fff;font-family:Arial;padding:10px;margin:0}
+.card{background:#111;border:1px solid #333;border-radius:10px;padding:10px;margin-bottom:10px}
+.box{padding:14px;border-radius:8px;text-align:center;font-weight:bold;margin-bottom:8px;font-size:14px}
 </style>
 </head>
 <body>
-<h3 style="margin:6px">NOVA V12 ₿ FIXED DISPLAY</h3>
+<h3>NOVA V13 SIMPLE ₿</h3>
 
-<div class="card">
-<div style="display:flex;justify-content:space-between">
-<div>WEB: <b id="price" style="color:#ffcc00;font-size:16px">$--</b> | FBS: <b id="fbsPriceDisplay" style="color:#00ff88">$--</b></div>
-<div id="status" style="color:#00ff88;font-size:10px">LOADING...</div>
-</div>
-<div style="font-size:10px;color:#888">Locked: <span id="lockedP">83093</span> | <span id="lockedD"></span> | <span id="serverTime">--</span></div>
-<div style="margin-top:8px;display:flex;gap:4px">
-<input id="brokerPrice" type="number" placeholder="FBS price e.g 82915" style="flex:1;padding:10px;border:1px solid #333;background:#111;color:#fff;border-radius:6px">
-<button onclick="syncBroker()" style="padding:10px 14px;background:#00ff88;color:#000;border-radius:6px">SYNC BROKER</button>
-</div>
-<div id="offsetInfo" style="font-size:10px;color:#888;margin-top:4px">Offset: 0</div>
-<button style="width:100%;background:#ffcc00;color:#000;padding:10px;margin-top:8px;border-radius:8px;font-weight:bold" onclick="enable()">🔔 ENABLE ALARM</button>
+<div class="card" style="text-align:center">
+<div style="font-size:12px;color:#888">LOCKED ENTRY TODAY - NEVER CHANGES</div>
+<div style="font-size:22px;color:#ffcc00;font-weight:bold" id="locked">83093 BUY</div>
+<div style="font-size:11px;color:#888">Date: <span id="ldate"></span> | Server: <span id="stime"></span></div>
+<div style="font-size:11px;color:#00ff88" id="count">Lock until tomorrow 10:00 AM EAT</div>
 </div>
 
 <div class="card">
-<div id="zoneTitle" style="font-weight:bold;font-size:15px;margin-bottom:6px;color:#ffcc00">Loading zone...</div>
-<div class="chartWrap" id="chart"><div style="padding:20px;color:#555">Loading chart...</div></div>
-<div style="display:grid;grid-template-columns:1fr 1fr 1fr;font-size:11px;margin-top:6px;gap:4px;text-align:center">
-<div style="background:#2a0a0a;padding:5px;border-radius:6px">🔴 SL<br><b id="slTxt">--</b></div>
-<div style="background:#1a1a00;padding:5px;border-radius:6px">🟡 ENTRY<br><b id="entryTxt">--</b><br><span id="biasBadge">BUY</span></div>
-<div style="background:#0a1a2a;padding:5px;border-radius:6px">🔵 TP<br><b id="tpTxt">--</b></div>
+<div class="box" style="background:#0a2a4a;border:1px solid #26a6ff;color:#88ccff">🔵 TP2 RUNNER $83993 (+$900 3R) - LEAVE RUNNING</div>
+<div class="box" style="background:#0a1a3a;border:1px solid #26a6ff">🔵 TP1 $83693 (+$600 2R) - CLOSE HERE</div>
+<div class="box" style="background:#332a00;border:2px solid #ffcc00;color:#ffcc00" id="entryBox">🟡 BUY ENTRY ZONE $82893 - $83093 - BUY NOW INSIDE</div>
+<div class="box" style="background:#3a0a0a;border:1px solid #ff4444;color:#ffaaaa">🔴 SL $82593 (-$300) - FIXED</div>
+<div style="height:2px;background:#00ff88;margin:8px 0"></div>
+<div style="text-align:center;font-size:12px">LIVE FBS PRICE: Enter below to check zone</div>
+<input id="fbs" type="number" placeholder="Enter FBS price e.g 82892" style="width:100%;padding:12px;margin-top:6px;background:#000;color:#0f0;border:1px solid #0f0;border-radius:6px;text-align:center;font-size:18px">
+<button onclick="check()" style="width:100%;padding:12px;margin-top:6px;background:#ffcc00;color:#000;border-radius:6px;font-weight:bold">CHECK IF INSIDE ZONE</button>
+<div id="result" style="text-align:center;margin-top:8px;font-weight:bold;font-size:16px"></div>
 </div>
-<div id="info" style="font-size:11px;color:#888;margin-top:6px"></div>
+
+<div class="card" style="font-size:12px">
+<b>FBS SETUP:</b><br>
+BUY 0.01 at 82893-83093<br>
+SL 82593<br>
+TP1 83693<br>
+TP2 83993 runner<br>
+<span style="color:#888">BE at +$150 | $10 acc risk $3 | $63 acc risk $3</span>
 </div>
 
 <script>
-let lockedPrice=localStorage.getItem('v7_btcPrice')||'83093';
-let lockedBias=localStorage.getItem('v7_btcBias')||'BUY';
-let lockedDate=localStorage.getItem('v7_btcDate')||new Date().toDateString();
-let priceOffset=parseFloat(localStorage.getItem('btcOffset')||'0');
-let notify=false, lastAlarm=0, lastWebPrice=83093;
+let lp=localStorage.getItem('v7_btcPrice')||'83093';
+let lb=localStorage.getItem('v7_btcBias')||'BUY';
+let ld=localStorage.getItem('v7_btcDate')||new Date().toDateString();
+document.getElementById('locked').innerText='$'+lp+' '+lb;
+document.getElementById('ldate').innerText=ld;
+document.getElementById('entryBox').innerText='🟡 '+lb+' ENTRY ZONE '+(lb==='BUY'?'82893 - 83093':'83093 - 83293')+' - TRADE NOW';
 
-function enable(){
- notify=true;
- if("Notification" in window) Notification.requestPermission();
- if(navigator.vibrate) navigator.vibrate(100);
- alert("✅ ARMED - Chart will show LONG/SHORT boxes");
+function updateTime(){
+ let now=new Date();
+ let eat=new Date(now.toLocaleString('en-US',{timeZone:'Africa/Nairobi'}));
+ document.getElementById('stime').innerText=eat.toLocaleTimeString();
+ let tomorrow=new Date(eat); tomorrow.setDate(tomorrow.getDate()+1); tomorrow.setHours(10,0,0,0);
+ let diff=tomorrow-eat;
+ let h=Math.floor(diff/3600000), m=Math.floor((diff%3600000)/60000), s=Math.floor((diff%60000)/1000);
+ document.getElementById('count').innerText='Next lock in: '+h+'h '+m+'m '+s+'s | Same for all clients (EAT)';
 }
+setInterval(updateTime,1000); updateTime();
 
-function syncBroker(){
- let fbs=parseFloat(document.getElementById('brokerPrice').value);
- if(!fbs) return alert("Enter FBS price");
- priceOffset=fbs-lastWebPrice;
- localStorage.setItem('btcOffset',priceOffset);
- document.getElementById('offsetInfo').innerText='Offset: '+priceOffset.toFixed(0)+' | Web $'+lastWebPrice.toFixed(0)+' = FBS $'+fbs.toFixed(0);
- draw(lastWebPrice, lockedBias, 82893, 83093);
+function check(){
+ let p=parseFloat(document.getElementById('fbs').value);
+ if(!p) return;
+ let low=82893, high=83093;
+ if(p>=low && p<=high){
+   document.getElementById('result').innerHTML='<span style="color:#00ff88">✅ INSIDE BUY ZONE! BUY NOW<br>SL 82593 | TP 83693</span>';
+   if(navigator.vibrate) navigator.vibrate([300,100,300]);
+   try{ new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg").play(); }catch(e){}
+ } else if(p<low){
+   document.getElementById('result').innerHTML='<span style="color:#ff4444">BELOW ZONE - Wait bounce or SELL breakdown</span>';
+ } else {
+   document.getElementById('result').innerHTML='<span style="color:#ffcc00">ABOVE ZONE - Wait pullback</span>';
+ }
 }
-
-function draw(webPrice, bias, lowWeb, highWeb){
- let c=document.getElementById('chart'); 
- c.innerHTML='';
- let fbsPrice=webPrice+priceOffset;
- let low=lowWeb+priceOffset, high=highWeb+priceOffset;
- let sl, tp1, tp2;
- if(bias==='BUY'){ sl=low-300; tp1=high+600; tp2=high+900; }
- else { sl=high+300; tp1=low-600; tp2=low-900; }
- let min=Math.min(sl,tp2,fbsPrice)-150;
- let max=Math.max(sl,tp2,fbsPrice)+150;
- let range=max-min;
- let y=price=>((max-price)/range)*100;
-
- // TP
- let tpBox=document.createElement('div'); tpBox.className='box tpBox';
- tpBox.style.top=y(Math.max(tp1,tp2))+'%';
- tpBox.style.height=Math.max(12,Math.abs(y(tp1)-y(tp2))+12)+'%';
- tpBox.innerText='TP +$600 / +$900 RUNNER';
- c.appendChild(tpBox);
-
- // ENTRY
- let eBox=document.createElement('div'); eBox.className='box entryBox';
- eBox.style.top=y(high)+'%'; eBox.style.height=Math.max(10,Math.abs(y(high)-y(low)))+'%';
- eBox.innerText=bias+' ENTRY '+low.toFixed(0)+' - '+high.toFixed(0);
- c.appendChild(eBox);
-
- // SL
- let sBox=document.createElement('div'); sBox.className='box slBox';
- if(bias==='BUY'){ sBox.style.top=y(low)+'%'; sBox.style.height=Math.abs(y(low)-y(sl))+'%'; }
- else { sBox.style.top=y(sl)+'%'; sBox.style.height=Math.abs(y(high)-y(sl))+'%'; }
- sBox.innerText='SL $'+sl.toFixed(0)+' (-$300)';
- c.appendChild(sBox);
-
- // LIVE
- let live=document.createElement('div'); live.className='liveLine';
- live.style.top=y(fbsPrice)+'%';
- live.innerHTML='<span style="background:#00ff88;color:#000;padding:2px 4px">FBS $'+fbsPrice.toFixed(0)+'</span>';
- c.appendChild(live);
-
- // Labels - FIXED
- let labels=[[sl,'#ff4444'],[low,'#ffcc00'],[high,'#ffcc00'],[tp1,'#26a6ff'],[tp2,'#0066ff']];
- labels.forEach(function(item){
-   let pr=item[0], col=item[1];
-   let lbl=document.createElement('div'); lbl.className='priceLabel';
-   lbl.style.top=y(pr)+'%'; lbl.style.background=col; lbl.style.color=col==='#ffcc00'?'#000':'#fff';
-   lbl.innerText='$'+pr.toFixed(0); c.appendChild(lbl);
- });
-
- document.getElementById('slTxt').innerText='$'+sl.to
+</script>
+</body>
+</html>
