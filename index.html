@@ -2,56 +2,45 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NOVA V11 FINAL</title>
+<title>NOVA V12 FIXED DISPLAY</title>
 <style>
 body{background:#000;color:#fff;font-family:Arial;padding:8px;margin:0}
 .card{background:#121212;border:1px solid #2a2a2a;border-radius:12px;padding:10px;margin-bottom:10px}
 .chartWrap{position:relative;height:460px;background:#0e0e0e;border:1px solid #333;border-radius:10px;overflow:hidden}
-.box{position:absolute;left:12%;right:18%;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:11px;border-radius:2px}
-.entryBox{border:2px solid #ffcc00;background:rgba(255,204,0,0.18);z-index:3}
-.slBox{background:rgba(255,68,68,0.38);border:1px solid #ff4444;color:#ffb3b3;z-index:2}
-.tpBox{background:rgba(38,166,255,0.28);border:1px solid #26a6ff;color:#88ccff;z-index:2}
-.liveLine{position:absolute;left:0;right:0;height:2px;background:#ffcc00;z-index:5;display:flex;justify-content:space-between;align-items:center;padding:0 4px;font-size:11px;font-weight:bold}
-.priceLabel{position:absolute;right:0;padding:2px 6px;font-size:10px;border-radius:3px;font-weight:bold}
-button{border:none;border-radius:8px;font-weight:bold}
-input{border-radius:6px;border:1px solid #333;background:#111;color:#fff}
+.box{position:absolute;left:12%;right:18%;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:11px;border-radius:3px}
+.entryBox{border:2px solid #ffcc00;background:rgba(255,204,0,0.2);z-index:3;color:#ffcc00}
+.slBox{background:rgba(255,68,68,0.4);border:1px solid #ff4444;color:#fff;z-index:2}
+.tpBox{background:rgba(38,166,255,0.3);border:1px solid #26a6ff;color:#fff;z-index:2}
+.liveLine{position:absolute;left:0;right:0;height:2px;background:#ffcc00;z-index:5;display:flex;justify-content:space-between;align-items:center;font-size:11px}
+.priceLabel{position:absolute;right:2px;padding:3px 6px;font-size:10px;border-radius:3px;font-weight:bold;transform:translateY(-50%)}
 </style>
 </head>
 <body>
-<h3 style="margin:6px">NOVA V11 ₿ FINAL 100% ROBOT</h3>
+<h3 style="margin:6px">NOVA V12 ₿ FIXED DISPLAY</h3>
 
 <div class="card">
-<div style="display:flex;justify-content:space-between;font-size:13px">
+<div style="display:flex;justify-content:space-between">
 <div>WEB: <b id="price" style="color:#ffcc00;font-size:16px">$--</b> | FBS: <b id="fbsPriceDisplay" style="color:#00ff88">$--</b></div>
-<div id="status" style="color:#00ff88;font-size:10px">--</div>
+<div id="status" style="color:#00ff88;font-size:10px">LOADING...</div>
 </div>
-<div style="font-size:10px;color:#888">Locked: <span id="lockedP">--</span> | <span id="lockedD">--</span> | <span id="serverTime">--</span></div>
-
+<div style="font-size:10px;color:#888">Locked: <span id="lockedP">83093</span> | <span id="lockedD"></span> | <span id="serverTime">--</span></div>
 <div style="margin-top:8px;display:flex;gap:4px">
-<input id="brokerPrice" type="number" placeholder="Enter FBS BTC price e.g 82915" style="flex:1;padding:10px">
-<button onclick="syncBroker()" style="width:auto;padding:10px 14px;background:#00ff88;color:#000">SYNC BROKER</button>
+<input id="brokerPrice" type="number" placeholder="FBS price e.g 82915" style="flex:1;padding:10px;border:1px solid #333;background:#111;color:#fff;border-radius:6px">
+<button onclick="syncBroker()" style="padding:10px 14px;background:#00ff88;color:#000;border-radius:6px">SYNC BROKER</button>
 </div>
-<div id="offsetInfo" style="font-size:10px;color:#888;margin-top:4px">Offset: 0 | Enter FBS price to match broker</div>
-
-<button style="width:100%;background:#ffcc00;color:#000;padding:10px;margin-top:8px" onclick="enable()">🔔 ENABLE ALARM - RING INSIDE ZONE</button>
-<div id="notifStatus" style="font-size:10px;color:#aaa;margin-top:4px">Alarm rings only inside zone</div>
+<div id="offsetInfo" style="font-size:10px;color:#888;margin-top:4px">Offset: 0</div>
+<button style="width:100%;background:#ffcc00;color:#000;padding:10px;margin-top:8px;border-radius:8px;font-weight:bold" onclick="enable()">🔔 ENABLE ALARM</button>
 </div>
 
 <div class="card">
-<div id="zoneTitle" style="font-weight:bold;font-size:16px;margin-bottom:6px">--</div>
-<div class="chartWrap" id="chart"></div>
+<div id="zoneTitle" style="font-weight:bold;font-size:15px;margin-bottom:6px;color:#ffcc00">Loading zone...</div>
+<div class="chartWrap" id="chart"><div style="padding:20px;color:#555">Loading chart...</div></div>
 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;font-size:11px;margin-top:6px;gap:4px;text-align:center">
-<div style="background:#2a0a0a;padding:5px;border-radius:6px">🔴 SL<br><b id="slTxt">--</b><br><span style="color:#ff8888">-$300 (0.01 lot)</span></div>
-<div style="background:#1a1a00;padding:5px;border-radius:6px">🟡 ENTRY<br><b id="entryTxt">--</b><br><span id="biasBadge" style="padding:2px 4px;border-radius:3px;font-size:10px">--</span></div>
-<div style="background:#0a1a2a;padding:5px;border-radius:6px">🔵 TP<br><b id="tpTxt">--</b><br><span style="color:#88ccff">+$600 2R / +$900 3R runner</span></div>
+<div style="background:#2a0a0a;padding:5px;border-radius:6px">🔴 SL<br><b id="slTxt">--</b></div>
+<div style="background:#1a1a00;padding:5px;border-radius:6px">🟡 ENTRY<br><b id="entryTxt">--</b><br><span id="biasBadge">BUY</span></div>
+<div style="background:#0a1a2a;padding:5px;border-radius:6px">🔵 TP<br><b id="tpTxt">--</b></div>
 </div>
 <div id="info" style="font-size:11px;color:#888;margin-top:6px"></div>
-</div>
-
-<div class="card" style="font-size:11px">
-<b>SET IN FBS MT5 NOW:</b><br>
-Entry: <span id="cEntry">--</span> | SL: <span id="cSL">--</span> | TP1: <span id="cTP">--</span> | TP2 Runner: <span id="cTP2">--</span><br>
-<span style="color:#888">For $10 acc and $63 acc: 0.01 BTC only | BE at +$150</span>
 </div>
 
 <script>
@@ -59,87 +48,70 @@ let lockedPrice=localStorage.getItem('v7_btcPrice')||'83093';
 let lockedBias=localStorage.getItem('v7_btcBias')||'BUY';
 let lockedDate=localStorage.getItem('v7_btcDate')||new Date().toDateString();
 let priceOffset=parseFloat(localStorage.getItem('btcOffset')||'0');
-let notify=false, lastAlarm=0, lastWebPrice=0;
-
-document.getElementById('offsetInfo').innerText = `Offset: ${priceOffset>0?'+':''}${priceOffset.toFixed(0)} | Web and FBS ${priceOffset===0?'same':'synced'}`;
+let notify=false, lastAlarm=0, lastWebPrice=83093;
 
 function enable(){
  notify=true;
  if("Notification" in window) Notification.requestPermission();
  if(navigator.vibrate) navigator.vibrate(100);
- alert("✅ ALARM ARMED\n\nNow you see LONG box if BUY, SHORT box if SELL\nSL red, TP blue, ENTRY yellow\nWill ring ONLY inside zone");
- document.getElementById('notifStatus').innerText='✅ ARMED - Rings only at entry';
+ alert("✅ ARMED - Chart will show LONG/SHORT boxes");
 }
 
 function syncBroker(){
  let fbs=parseFloat(document.getElementById('brokerPrice').value);
- if(!fbs || !lastWebPrice) return alert("Wait for web price to load, then enter FBS price from MT5");
+ if(!fbs) return alert("Enter FBS price");
  priceOffset=fbs-lastWebPrice;
  localStorage.setItem('btcOffset',priceOffset);
- document.getElementById('offsetInfo').innerText=`Offset saved: ${priceOffset>0?'+':''}${priceOffset.toFixed(0)} | Web $${lastWebPrice.toFixed(0)} = FBS $${fbs.toFixed(0)} | Zones now match broker!`;
- document.getElementById('fbsPriceDisplay').innerText='$'+fbs.toFixed(0);
- alert(`✅ SYNCED!\nWeb $${lastWebPrice.toFixed(0)} = FBS $${fbs.toFixed(0)}\n\nNow set SL/TP from FBS section below`);
+ document.getElementById('offsetInfo').innerText='Offset: '+priceOffset.toFixed(0)+' | Web $'+lastWebPrice.toFixed(0)+' = FBS $'+fbs.toFixed(0);
+ draw(lastWebPrice, lockedBias, 82893, 83093);
 }
 
 function draw(webPrice, bias, lowWeb, highWeb){
- let c=document.getElementById('chart'); c.innerHTML='';
+ let c=document.getElementById('chart'); 
+ c.innerHTML='';
  let fbsPrice=webPrice+priceOffset;
  let low=lowWeb+priceOffset, high=highWeb+priceOffset;
  let sl, tp1, tp2;
  if(bias==='BUY'){ sl=low-300; tp1=high+600; tp2=high+900; }
  else { sl=high+300; tp1=low-600; tp2=low-900; }
-
- let min=Math.min(sl,tp2,fbsPrice,webPrice)-120;
- let max=Math.max(sl,tp2,fbsPrice,webPrice)+120;
+ let min=Math.min(sl,tp2,fbsPrice)-150;
+ let max=Math.max(sl,tp2,fbsPrice)+150;
  let range=max-min;
  let y=price=>((max-price)/range)*100;
 
- // TP BOX
+ // TP
  let tpBox=document.createElement('div'); tpBox.className='box tpBox';
- tpBox.style.top=y(Math.max(tp1,tp2,high))+'%';
- tpBox.style.height=Math.abs(y(Math.min(tp1,high))-y(Math.max(tp1,tp2)))+30+'%';
- tpBox.innerHTML=`TP TARGET +$600 to +$900 RUNNER`;
+ tpBox.style.top=y(Math.max(tp1,tp2))+'%';
+ tpBox.style.height=Math.max(12,Math.abs(y(tp1)-y(tp2))+12)+'%';
+ tpBox.innerText='TP +$600 / +$900 RUNNER';
  c.appendChild(tpBox);
 
- // ENTRY BOX
+ // ENTRY
  let eBox=document.createElement('div'); eBox.className='box entryBox';
- eBox.style.top=y(high)+'%'; eBox.style.height=Math.abs(y(high)-y(low))+'%';
- eBox.innerHTML=`<span style="color:#ffcc00">${bias} ENTRY ${low.toFixed(0)} - ${high.toFixed(0)}</span>`;
+ eBox.style.top=y(high)+'%'; eBox.style.height=Math.max(10,Math.abs(y(high)-y(low)))+'%';
+ eBox.innerText=bias+' ENTRY '+low.toFixed(0)+' - '+high.toFixed(0);
  c.appendChild(eBox);
 
- // SL BOX
+ // SL
  let sBox=document.createElement('div'); sBox.className='box slBox';
  if(bias==='BUY'){ sBox.style.top=y(low)+'%'; sBox.style.height=Math.abs(y(low)-y(sl))+'%'; }
  else { sBox.style.top=y(sl)+'%'; sBox.style.height=Math.abs(y(high)-y(sl))+'%'; }
- sBox.innerHTML=`STOP LOSS $${sl.toFixed(0)} (-$300)`;
+ sBox.innerText='SL $'+sl.toFixed(0)+' (-$300)';
  c.appendChild(sBox);
 
- // LIVE lines - both web and FBS
+ // LIVE
  let live=document.createElement('div'); live.className='liveLine';
  live.style.top=y(fbsPrice)+'%';
- live.innerHTML=`<span style="background:#00ff88;color:#000;padding:1px 4px">FBS $${fbsPrice.toFixed(0)}</span><span style="background:#ffcc00;color:#000;padding:2px 6px;border-radius:3px">$${fbsPrice.toFixed(0)}</span>`;
+ live.innerHTML='<span style="background:#00ff88;color:#000;padding:2px 4px">FBS $'+fbsPrice.toFixed(0)+'</span>';
  c.appendChild(live);
 
- // Labels
- [[sl,'#ff4444'],[low,'#ffcc00'],[high,'#ffcc00'],[tp1,'#26a6ff'],[tp2,'#0066ff']].forEach(([pr,col])=>{
+ // Labels - FIXED
+ let labels=[[sl,'#ff4444'],[low,'#ffcc00'],[high,'#ffcc00'],[tp1,'#26a6ff'],[tp2,'#0066ff']];
+ labels.forEach(function(item){
+   let pr=item[0], col=item[1];
    let lbl=document.createElement('div'); lbl.className='priceLabel';
    lbl.style.top=y(pr)+'%'; lbl.style.background=col; lbl.style.color=col==='#ffcc00'?'#000':'#fff';
    lbl.innerText='$'+pr.toFixed(0); c.appendChild(lbl);
  });
 
- document.getElementById('slTxt').innerText='$'+sl.toFixed(0);
- document.getElementById('entryTxt').innerText=low.toFixed(0)+'-'+high.toFixed(0);
- document.getElementById('tpTxt').innerText='$'+tp1.toFixed(0)+' / $'+tp2.toFixed(0);
- document.getElementById('cEntry').innerText=low.toFixed(0)+'-'+high.toFixed(0);
- document.getElementById('cSL').innerText=sl.toFixed(0);
- document.getElementById('cTP').innerText=tp1.toFixed(0);
- document.getElementById('cTP2').innerText=tp2.toFixed(0)+' RUNNER';
- document.getElementById('zoneTitle').innerHTML=`<span style="color:${bias==='BUY'?'#00ff88':'#ff4444'}">${bias} ZONE: ${low.toFixed(0)} - ${high.toFixed(0)} ${fbsPrice>=low&&fbsPrice<=high?'✅ TRADE NOW':''}</span>`;
- document.getElementById('biasBadge').innerText=bias+' POSITION'; document.getElementById('biasBadge').style.background=bias==='BUY'?'#00ff88':'#ff4444'; document.getElementById('biasBadge').style.color='#000';
- document.getElementById('info').innerText=`WEB $${webPrice.toFixed(0)} + Offset ${priceOffset.toFixed(0)} = FBS $${fbsPrice.toFixed(0)} | ${fbsPrice>=low&&fbsPrice<=high?'🔔 INSIDE ZONE - BUY NOW!':'Waiting...'}`;
- document.getElementById('fbsPriceDisplay').innerText='$'+fbsPrice.toFixed(0);
-
- if(notify && fbsPrice>=low && fbsPrice<=high && Date.now()-lastAlarm>300000){
-   lastAlarm=Date.now();
-   if(navigator.vibrate) navigator.vibrate([500,200,500]);
-   try{ new Audio("https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg").play(); }catch(e){}
+ document.getElementById('slTxt').innerText='$'+sl.to
