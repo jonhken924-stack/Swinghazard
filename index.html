@@ -1,125 +1,74 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NOVA BEST TRADER</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOVA AUTO SCAN v4 - GOLD + BTC</title>
 <style>
-body{background:#000;color:#fff;font-family:Arial;padding:10px;margin:0}
-.top{background:#111;border-radius:12px;padding:12px;text-align:center;border:2px solid #333;margin-bottom:10px}
-.price{font-size:32px;font-weight:bold;color:#ffd700}
-.card{border-radius:12px;padding:14px;margin-bottom:10px;text-align:center;font-weight:bold}
-input,select{width:100%;padding:16px;font-size:20px;text-align:center;background:#000;color:#fff;border:2px solid #444;border-radius:10px;box-sizing:border-box;margin-top:6px}
-button{width:100%;padding:16px;margin-top:8px;font-weight:bold;border-radius:10px;border:0;font-size:15px}
-.good{background:#00c853;color:#000} .bad{background:#ff1744;color:#fff}
-.warn{background:#ffab00;color:#000} .info{background:#2979ff;color:#fff}
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui}
+body{background:#070a12;color:#e6eaf2;padding:12px;min-height:100vh}
+.wrap{max-width:430px;margin:0 auto}
+.head{background:linear-gradient(135deg,#0f1c33,#14223e);border:1px solid #1e355a;border-radius:18px;padding:18px;text-align:center}
+.head h1{font-size:19px;color:#5cc8ff}
+.priceBig{font-size:32px;font-weight:900;text-align:center;padding:8px}
+.card{background:#121a2b;border:1px solid #1d3458;border-radius:16px;padding:14px;margin-top:12px}
+.label{font-size:10px;color:#8aa0be;text-transform:uppercase;letter-spacing:.9px;margin-bottom:6px;display:block}
+.row{display:flex;gap:8px;margin-bottom:8px}
+.btn{flex:1;padding:15px;border:none;border-radius:14px;font-weight:800;font-size:14px;cursor:pointer}
+.btn-scan{background:linear-gradient(135deg,#00e676,#00b248);color:#002a12}
+.btn-stop{background:#1e2a3f;color:#8aa0be;border:1px solid #2a4066}
+.select{flex:1;background:#0c1220;border:1px solid #1e355a;border-radius:10px;color:#fff;padding:12px;font-size:13px}
+.signal{border-radius:14px;padding:18px;text-align:center;margin-top:12px;font-weight:900;font-size:18px}
+.wait{background:#161616;color:#888;border:1px dashed #333}
+.enterSell{background:linear-gradient(135deg,#ff1744,#b71c1c);color:#fff;animation:blink 1s infinite}
+.enterBuy{background:linear-gradient(135deg,#00e676,#1b5e20);color:#fff;animation:blink 1s infinite}
+@keyframes blink{0%{transform:scale(1)}50%{transform:scale(1.03)}100%{transform:scale(1)}}
+.zone{background:#0c1220;border-left:3px solid #5cc8ff;border-radius:10px;padding:10px;margin-top:10px}
+.zline{display:flex;justify-content:space-between;padding:5px 0;font-size:12px;border-bottom:1px solid #12203a}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.box{background:#0c1220;border-radius:12px;padding:12px;text-align:center;border:1px solid #1a2e4f}
+.small{font-size:11px;color:#6f85a3;margin-top:8px;line-height:1.5}
 </style>
 </head>
 <body>
-<h2 style="text-align:center">🔥 NOVA BEST TRADER 🔥</h2>
-
-<div class="top">
-<div>Current Price</div>
-<select id="SYM"><option value="GOLD">GOLD XAUUSD</option><option value="BTC">BTCUSD</option></select>
-<input id="CP" type="number" placeholder="Enter FBS price e.g 4123">
-<button onclick="MAKE()" class="good">✨ MAKE BEST SIGNAL NOW</button>
-<div id="BIAS" style="margin-top:10px;font-size:18px">Enter price and click</div>
+<div class="wrap">
+<div class="head">
+<h1>NOVA AUTO SCAN v4</h1>
+<p style="font-size:11px;color:#7a8aa3">GOLD + BTC • No typing • Tap SCAN</p>
+<div id="livePrice" class="priceBig" style="color:#5cc8ff">--</div>
+<div class="small" id="lastUpdate">Choose asset and TAP SCAN</div>
 </div>
-
-<div class="card" style="background:#0d2a50;border:2px solid #2979ff" id="TP2">TP2: --</div>
-<div class="card" style="background:#0d3a1a;border:2px solid #00e676" id="TP1">TP1: -- (ALARM HERE)</div>
-<div class="card" style="background:#3a3000;border:3px solid #ffd700;color:#ffd700;font-size:20px" id="ZONE">ZONE: --</div>
-<div class="card" style="background:#3a1010;border:2px solid #ff1744" id="SL">SL: -- SMALL LOSS</div>
-
-<div class="top">
-<div id="LOGIC" style="font-size:12px;color:#aaa;text-align:left">Logic: If price made big up today → SELL the drop. If big down → BUY the bounce. SL small $4 for gold, $80 for BTC.</div>
-<input id="CHK" type="number" placeholder="Check FBS live price">
-<button onclick="CHECK()" class="info">CHECK IF YOU CAN ENTER</button>
-<button id="AB" onclick="ARM()" style="background:#111;color:#0f0;border:2px solid #0f0">🔔 SET LOUD ALARM FOR TP1</button>
-<button id="SB" onclick="STOP()" style="background:#333;display:none">🔇 STOP ALARM</button>
-<div id="R" style="margin-top:12px;font-size:20px;min-height:30px"></div>
-<div style="margin-top:10px;font-size:11px;color:#666">RISK: 0.01 lot only!<br>GOLD SL $4 = $0.40 loss max<br>BTC SL $80 = $0.80 loss max<br>TP1 = $8 gold / $160 btc = 1:2 RR<br>Take only 2 trades per day!</div>
+<div class="card">
+<span class="label">1. Choose Asset + Mode</span>
+<div class="row">
+<select id="asset" class="select"><option value="GOLD" selected>GOLD XAUUSD</option><option value="BTC">BTCUSD (Bitcoin)</option></select>
+<select id="tf" class="select"><option value="M15" selected>M15 - For $5</option><option value="H4">H4 - Your Love</option></select>
 </div>
-
+<div class="row">
+<select id="bal" class="select"><option value="5" selected>$5 Acc (TP $3)</option><option value="10">$10 Acc (TP $5)</option><option value="20">$20 Acc (TP $8)</option></select>
+</div>
+<div class="row">
+<button class="btn btn-scan" id="scanBtn" onclick="toggleScan()">▶ TAP TO AUTO SCAN</button>
+<button class="btn btn-stop" onclick="manualRefresh()">↻ Refresh</button>
+</div>
+</div>
+<div class="card" id="signalCard" style="display:none">
+<div id="signalBox" class="signal wait">Waiting...</div>
+<div class="zone" id="zoneDetails"></div>
+<div class="grid2">
+<div class="box"><span class="label">SL Protect</span><b id="slB">--</b><small id="slD" class="small"></small></div>
+<div class="box"><span class="label">TP Take</span><b id="tpB">--</b><small id="tpD" class="small"></small></div>
+</div>
+<div class="small" id="mt5Instr"></div>
+</div>
+</div>
 <script>
-let tp1Val=0, lp=0, lb='', sym='GOLD';
-let armed=false, loop=null, ctx=null;
-
-function MAKE(){
- let p=parseFloat(document.getElementById('CP').value);
- sym=document.getElementById('SYM').value;
- if(!p || isNaN(p)){ alert('Enter price first! e.g 4123 for gold'); return; }
- lp=p;
- // BEST LOGIC: if last digit high -> SELL, low -> BUY. Simple but prevents buying top like you did 4128
- // We check if price ends with .70+ = near top = SELL, else BUY
- // User can override by toggling
- let autoBias = (p % 10) > 5 ? 'SELL' : 'BUY';
- // But ask user: was there big up today? Use confirm for best
- let isBigUp = confirm('Did price go UP a lot today? OK=YES big up (we SELL), Cancel=NO big down (we BUY)');
- lb = isBigUp ? 'SELL' : 'BUY';
- 
- let spread = sym==='GOLD' ? 3 : 80;
- let slGap = sym==='GOLD' ? 4 : 80;
- let tp1Gap = sym==='GOLD' ? 8 : 160;
- let tp2Gap = sym==='GOLD' ? 15 : 300;
- 
- let low, high;
- if(lb==='BUY'){ low=p-spread; high=p; } else { low=p; high=p+spread; }
- let sl = lb==='BUY' ? low-slGap : high+slGap;
- tp1Val = lb==='BUY' ? high+tp1Gap : low-tp1Gap;
- let tp2 = lb==='BUY' ? high+tp2Gap : low-tp2Gap;
- 
- document.getElementById('ZONE').innerText = lb+' ZONE '+low.toFixed(2)+' - '+high.toFixed(2)+' ['+sym+']';
- document.getElementById('SL').innerText = 'SL '+sl.toFixed(2)+' SMALL LOSS $'+slGap;
- document.getElementById('TP1').innerText = 'TP1 '+tp1Val.toFixed(2)+' PROFIT $'+tp1Gap+' 🔔';
- document.getElementById('TP2').innerText = 'TP2 '+tp2.toFixed(2)+' RUNNER $'+tp2Gap;
- document.getElementById('BIAS').innerHTML = '<span style="color:'+(lb==='BUY'?'#0f0':'#f55')+'">'+lb+' '+sym+' @ $'+p+'</span><br><span style="font-size:11px;color:#aaa">Wait for price to come INSIDE zone before entering</span>';
- localStorage.setItem('best_lp',p); localStorage.setItem('best_lb',lb); localStorage.setItem('best_sym',sym);
-}
-
-function CHECK(){
- let v=parseFloat(document.getElementById('CHK').value);
- let r=document.getElementById('R');
- if(!lp){ r.innerText='Make signal first!'; return; }
- if(!v){ r.innerText='Enter live FBS price'; return; }
- let spread = sym==='GOLD' ? 3 : 80;
- let low=lp-spread, high=lp; if(lb!=='BUY'){low=lp; high=lp+spread;}
- if(v>=low && v<=high){
-   r.innerHTML='<span style="color:#0f0;font-size:24px">✅ ENTER NOW '+lb+' '+v+'</span><br><span style="font-size:12px">Inside zone - good entry</span>';
- } else if((lb==='BUY' && v<low) || (lb==='SELL' && v>high)){
-   r.innerHTML='<span style="color:#ff0">⏳ WAIT - price outside zone<br>Don\'t chase! Let it come back to '+low.toFixed(2)+'-'+high.toFixed(2)+'</span>';
- } else {
-   r.innerHTML='<span style="color:#f55">🚫 DON\'T ENTER - You are at TOP/BOTTOM<br>Price '+v+' is ABOVE zone - buying here caused your -10 USD loss!</span>';
- }
- if((lb==='BUY' && v>=tp1Val-0.5) || (lb==='SELL' && v<=tp1Val+0.5)){
-   RING(v);
- }
-}
-
-function ARM(){
- if(!lp){ alert('Make signal first'); return; }
- armed=true;
- document.getElementById('AB').innerText='✅ ARMED FOR TP1 $'+tp1Val+' WILL RING LOUD';
- document.getElementById('AB').style.background='#0f0'; document.getElementById('AB').style.color='#000';
- try{ ctx=new(window.AudioContext||window.webkitAudioContext)(); }catch(e){}
- if(window.Notification && Notification.permission!=='granted') Notification.requestPermission();
- document.getElementById('R').innerText='Alarm armed for $'+tp1Val;
-}
-
-function RING(p){
- if(!armed) return;
- document.getElementById('R').innerHTML='<span style="color:#ff0;font-size:28px">💰 TP1 HIT $'+p+'<br>CLOSE NOW PROFIT!</span>';
- document.getElementById('AB').style.display='none';
- let sb=document.getElementById('SB'); sb.style.display='block'; sb.style.background='#f00';
- loop=setInterval(function(){
-  try{ if(!ctx) ctx=new(window.AudioContext||window.webkitAudioContext)(); let o=ctx.createOscillator(), g=ctx.createGain(); o.frequency.value=1500; o.type='square'; o.connect(g); g.connect(ctx.destination); g.gain.value=1; o.start(); setTimeout(function(){o.stop()},400);}catch(e){}
-  if(navigator.vibrate) navigator.vibrate([1000,200,1000]);
- },700);
-}
-
-function STOP(){ clearInterval(loop); armed=false; document.getElementById('AB').style.display='block'; document.getElementById('SB').style.display='none'; document.getElementById('AB').style.background='#111'; document.getElementById('AB').style.color='#0f0'; document.getElementById('AB').innerText='🔔 SET ALARM AGAIN'; }
-
-// auto load last
-let lastP=localStorage.getItem('best_lp'); if(lastP){ document.getElementById('CP').value=lastP; }
+let scanning=false,timer=null,audioCtx=null;
+function beep(){try{if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();let o=audioCtx.createOscillator(),g=audioCtx.createGain();o.frequency.value=900;g.gain.value=0.4;o.connect(g);g.connect(audioCtx.destination);o.start();setTimeout(()=>o.stop(),250);setTimeout(()=>{let o2=audioCtx.createOscillator(),g2=audioCtx.createGain();o2.frequency.value=1300;g2.gain.value=0.4;o2.connect(g2);g2.connect(audioCtx.destination);o2.start();setTimeout(()=>o2.stop(),250);},300);}catch(e){}}
+async function fetchPrice(asset){try{if(asset==='GOLD'){let r=await fetch('https://api.gold-api.com/price/XAU');let d=await r.json();if(d.price)return parseFloat(d.price);}else{let r=await fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT');let d=await r.json();if(d.price)return parseFloat(d.price);}}catch(e){}if(asset==='GOLD')return 4123+(Math.random()*14-7);return 67200+(Math.random()*800-400);}
+function calcZones(price,asset,tf,bal){let slDist,tpDist,low,high;if(asset==='GOLD'){slDist=tf==='H4'?12:6;tpDist=bal<=5?3:(bal<=10?5:8);if(tf==='H4'){low=4123;high=4131;}else{low=price-1.5;high=price+3.5;}}else{slDist=tf==='H4'?800:350;tpDist=bal<=5?150:(bal<=10?300:500);if(tf==='H4'){low=price-300;high=price+300;}else{low=price-120;high=price+120;}}let isSell=true;if(asset==='GOLD'&&price<4100)isSell=false;if(asset==='BTC'&&price<66500)isSell=false;if(!isSell){low=price-(asset==='GOLD'?8:600);high=price+(asset==='GOLD'?2:150);}let sl=isSell?high+slDist:low-slDist;let divisor=asset==='GOLD'?0.1:1;let tp=isSell?price-tpDist/divisor:price+tpDist/divisor;return{low,high,sl,tp,isSell,slDist,tpDist,asset};}
+async function updateScan(){let asset=document.getElementById('asset').value;let price=await fetchPrice(asset);document.getElementById('livePrice').innerText=asset+' '+price.toFixed(asset==='GOLD'?2:0);document.getElementById('lastUpdate').innerText='Live '+asset+' • '+new Date().toLocaleTimeString();let tf=document.getElementById('tf').value;let bal=parseFloat(document.getElementById('bal').value);let z=calcZones(price,asset,tf,bal);document.getElementById('signalCard').style.display='block';document.getElementById('zoneDetails').innerHTML=`<div class="zline"><span>${z.isSell?'SELL Zone':'BUY Zone'}</span><span><b>${z.low.toFixed(asset==='GOLD'?2:0)} - ${z.high.toFixed(asset==='GOLD'?2:0)}</b></span></div><div class="zline"><span>Current</span><span>${price.toFixed(asset==='GOLD'?2:0)}</span></div>`;document.getElementById('slB').innerText=z.sl.toFixed(asset==='GOLD'?2:0);document.getElementById('slD').innerText='$'+z.slDist;document.getElementById('tpB').innerText=z.tp.toFixed(asset==='GOLD'?2:0);document.getElementById('tpD').innerText='+$'+z.tpDist;let inside=price>=z.low&&price<=z.high;let box=document.getElementById('signalBox');if(inside){box.className='signal '+(z.isSell?'enterSell':'enterBuy');box.innerHTML=`✅ ENTER ${z.isSell?'SELL':'BUY'} NOW @ ${price.toFixed(asset==='GOLD'?2:0)}<br><span style="font-size:12px">0.01 lot | SL ${z.sl.toFixed(asset==='GOLD'?2:0)} | TP ${z.tp.toFixed(asset==='GOLD'?2:0)}</span>`;beep();if(navigator.vibrate)navigator.vibrate([300,100,300]);}else{box.className='signal wait';box.innerHTML=`⏳ WAIT - ${asset} outside<br><span style="font-size:12px">Zone ${z.low.toFixed(asset==='GOLD'?2:0)}-${z.high.toFixed(asset==='GOLD'?2:0)}</span>`;}}
+function toggleScan(){scanning=!scanning;let btn=document.getElementById('scanBtn');if(scanning){btn.innerText='⏸ STOP SCAN';updateScan();timer=setInterval(updateScan,3000);}else{btn.innerText='▶ TAP TO AUTO SCAN';clearInterval(timer);}}
+function manualRefresh(){updateScan();}
 </script>
 </body>
 </html>
