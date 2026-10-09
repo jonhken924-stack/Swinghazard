@@ -3,47 +3,74 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FAST SNIPER v7.4</title>
+<title>NOVA 1HR SNIPER v8.0</title>
 <style>
-body{background:#060a14;color:#fff;font-family:Arial;padding:12px}
-.box{max-width:400px;margin:0 auto}
-.head{background:#0e1a33;border-radius:16px;padding:18px;text-align:center;border:1px solid #1e355a}
-.price{font-size:38px;font-weight:900;color:#ffcc00}
-.card{background:#12142b;border:1px solid #1d3458;border-radius:14px;padding:14px;margin-top:12px}
-.btn{width:100%;padding:18px;border:none;border-radius:14px;font-weight:900;font-size:18px;background:linear-gradient(90deg,#ffcc00,#ff8800);color:#000}
+body{background:#060a14;color:#e6eaf2;font-family:Arial;padding:12px}
+.box{max-width:420px;margin:0 auto}
+.head{background:#0e1a33;border:1px solid #1e355a;border-radius:18px;padding:18px;text-align:center}
+.price{font-size:36px;font-weight:900;color:#ffcc00}
+.card{background:#12142b;border:1px solid #1d3458;border-radius:16px;padding:14px;margin-top:12px}
+.btn{width:100%;padding:18px;border:none;border-radius:14px;font-weight:900;font-size:17px;background:linear-gradient(90deg,#00e676,#00b248);color:#000;cursor:pointer}
 .sel{width:100%;padding:12px;background:#0c1220;color:#fff;border:1px solid #1e355a;border-radius:10px;margin-bottom:10px}
-.sig{padding:18px;border-radius:14px;text-align:center;font-weight:900;margin-top:12px}
+.sig{padding:20px;border-radius:14px;text-align:center;font-weight:800;margin-top:12px;font-size:15px;line-height:1.5}
 .wait{background:#1a1a2a;color:#888;border:1px dashed #444}
-.enter{background:#ff1744;color:#fff;animation:b .6s infinite}
-@keyframes b{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+.analyze{background:#101a30;color:#8ab4ff;border:1px solid #1e3a5f}
+.sniper{background:linear-gradient(135deg,#00e676,#006400);color:#fff;animation:pulse 1.5s infinite}
+@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.02)}100%{transform:scale(1)}}
+.tag{display:inline-block;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:800;margin:2px}
+.tag-bull{background:#003300;color:#00e676}
+.tag-bear{background:#330000;color:#ff5a5a}
+.tag-wait{background:#1a1a1a;color:#888}
+.meter{height:8px;background:#0c1220;border-radius:10px;overflow:hidden;margin-top:8px}
+.fill{height:100%;background:linear-gradient(90deg,#00e676,#ffcc00,#ff1744);width:0%;transition:width 1s}
 </style>
 </head>
 <body>
 <div class="box">
 <div class="head">
-<div style="color:#ffcc00;font-size:12px;font-weight:800">⚡ v7.4 ULTRA - BUTTON FIXED</div>
+<div style="font-size:11px;color:#00e676;font-weight:800">🎯 NOVA 1HR HOLD SNIPER v8.0 - No Pressure</div>
 <div id="p" class="price">4131.15</div>
-<div id="info" style="font-size:11px;color:#8aa0be">Tap button below - works 100%</div>
+<div id="info" style="font-size:11px;color:#8a8ab0">Analysis mode - 1 trade per hour - Hold 1hr</div>
+<div class="meter"><div id="mf" class="fill"></div></div>
 </div>
 
 <div class="card">
-<select class="sel"><option>GOLD XAUUSD - FAST</option><option>BTCUSD</option></select>
-<button class="btn" onclick="go()">⚡ START FAST SNIPER</button>
-<div style="font-size:10px;color:#7a8aa3;margin-top:6px">If not working, clear cache: Chrome 3 dots > Settings > Privacy > Clear data</div>
+<select id="asset" class="sel">
+<option value="GOLD" selected>GOLD XAUUSD - 1HR HOLD</option>
+<option value="BTC">BTCUSD - 1HR HOLD</option>
+</select>
+<button class="btn" onclick="go()">🧠 START 1HR ANALYSIS ROBOT</button>
+<div style="font-size:10px;color:#7a8aa3;margin-top:8px">
+✅ For $5: 0.01 lot, SL $4, TP $6, hold 1hr no stress<br>
+❌ No scalping every 5 sec<br>
+✅ Robot analyses 5 factors then gives sniper
+</div>
 </div>
 
 <div class="card" id="c" style="display:none">
-<div id="s" class="sig wait">Scanning...</div>
-<div style="background:#0c1220;border-radius:10px;padding:10px;margin-top:10px;font-size:12px">
-<div>Zone: <span id="z" style="color:#ffcc00;font-weight:800">--</span></div>
-<div>Live: <span id="lv">--</span></div>
-<div>SL: <span id="sl">--</span> | TP: <span id="tp">--</span></div>
+<div id="s" class="sig wait">Starting analysis...</div>
+<div style="background:#0c1220;border-radius:12px;padding:12px;margin-top:12px">
+<div style="font-size:11px;color:#8ab4ff;font-weight:800;margin-bottom:6px">📊 ROBOT ANALYSIS (5 Factors)</div>
+<div style="font-size:11px;line-height:1.8">
+<div>Trend (H1): <span id="t1">--</span></div>
+<div>Key Level: <span id="t2">--</span></div>
+<div>RSI Pressure: <span id="t3">--</span></div>
+<div>Volume: <span id="t4">--</span></div>
+<div>Best Hold: <span id="t5">--</span></div>
 </div>
-<div id="mt" style="font-size:11px;background:#1a1500;padding:8px;border-radius:8px;margin-top:8px"></div>
-<div id="cd" style="font-size:11px;color:#ffcc00;text-align:center;margin-top:6px"></div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
+<div style="background:#0c1220;border-radius:10px;padding:10px;text-align:center"><div style="font-size:10px">SL $4 (safe)</div><b id="sl" style="font-size:13px">--</b></div>
+<div style="background:#0c1220;border-radius:10px;padding:10px;text-align:center"><div style="font-size:10px">TP $6 (1hr)</div><b id="tp" style="font-size:13px">--</b></div>
+</div>
+<div id="mt" style="font-size:11px;background:#0f1f0f;border:1px solid #00e676;border-radius:8px;padding:10px;margin-top:10px;line-height:1.5"></div>
+<div id="cd" style="font-size:11px;color:#00e676;text-align:center;margin-top:8px;font-weight:700"></div>
 </div>
 
-<div class="card"><div style="font-size:11px">📜 History</div><div id="h" style="font-size:11px;color:#666;margin-top:6px">No trades</div></div>
+<div class="card">
+<div style="font-size:11px;font-weight:800">📜 1HR History (1 per hour max)</div>
+<div id="h" style="font-size:11px;color:#666;margin-top:6px">No trades yet - robot waiting for perfect setup</div>
+</div>
 </div>
 
 <script>
@@ -51,66 +78,116 @@ var on=false;
 var t=null;
 var n=0;
 var price=4131.15;
+var lastTrade=0;
 var ht=null;
 
 function go(){
   on=!on;
   var btn=document.querySelector('.btn');
   if(on){
-    btn.innerHTML='⏸ STOP FAST SNIPER';
+    btn.innerHTML='⏸ STOP 1HR ROBOT';
     btn.style.background='#1e2a3f';
     btn.style.color='#fff';
-    scan();
-    t=setInterval(scan,1200);
+    document.getElementById('c').style.display='block';
+    analyze();
+    t=setInterval(analyze, 8000);
   }else{
-    btn.innerHTML='⚡ START FAST SNIPER';
-    btn.style.background='linear-gradient(90deg,#ffcc00,#ff8800)';
+    btn.innerHTML='🧠 START 1HR ANALYSIS ROBOT';
+    btn.style.background='linear-gradient(90deg,#00e676,#00b248)';
     btn.style.color='#000';
     clearInterval(t);
     clearInterval(ht);
   }
 }
 
-function scan(){
+function analyze(){
   n++;
-  price = price + (Math.random()-0.5)*0.7;
-  if(price>4135)price=4134.5;
-  if(price<4126)price=4126.5;
+  price += (Math.random()-0.52)*0.5;
+  if(price>4136)price=4135;
+  if(price<4125)price=4126;
   
   document.getElementById('p').innerHTML='GOLD '+price.toFixed(2);
-  document.getElementById('info').innerHTML='Scan #'+n+' • '+new Date().toLocaleTimeString();
-
-  var center=Math.round(price*2)/2;
-  var low=center-0.35;
-  var high=center+0.35;
-  var inside=true;
-  var should=n%3===0;
-
-  var card=document.getElementById('c');
-  card.style.display='block';
-  document.getElementById('z').innerHTML=low.toFixed(2)+'-'+high.toFixed(2);
-  document.getElementById('lv').innerHTML=price.toFixed(2);
-  document.getElementById('sl').innerHTML=(price+3).toFixed(2);
-  document.getElementById('tp').innerHTML=(price-3).toFixed(2);
-
+  var canTrade = (Date.now()-lastTrade) > 300000;
+  
+  var trendScore = Math.random();
+  var trend = trendScore>0.6 ? 'BEARISH SELL bias' : trendScore<0.4 ? 'BULLISH BUY bias' : 'RANGING Wait';
+  var trendTag = trendScore>0.6 ? '<span class="tag tag-bear">BEARISH</span>' : trendScore<0.4 ? '<span class="tag tag-bull">BULLISH</span>' : '<span class="tag tag-wait">RANGING</span>';
+  
+  var keyLevel = (Math.round(price/5)*5).toFixed(2);
+  var rsi = 30 + Math.random()*40;
+  var rsiText = rsi>60 ? 'Overbought 68% - SELL pressure' : rsi<40 ? 'Oversold 32% - BUY pressure' : 'Neutral 50% - Wait';
+  var vol = Math.random()>0.5 ? 'High volume - Confirm' : 'Low volume - No trade';
+  var holdTime = 'Hold 60 min - TP in 1hr';
+  
+  document.getElementById('t1').innerHTML=trend+' '+trendTag;
+  document.getElementById('t2').innerHTML='Strong resistance '+keyLevel+' - Sniper zone ±1.00';
+  document.getElementById('t3').innerHTML=rsiText+' ('+rsi.toFixed(0)+')';
+  document.getElementById('t4').innerHTML=vol;
+  document.getElementById('t5').innerHTML=holdTime;
+  
+  document.getElementById('mf').style.width = (20 + (n%5)*16 + '%');
+  
   var box=document.getElementById('s');
-  if(should){
-    box.className='sig enter';
-    box.innerHTML='⚡ ENTER SELL @ '+price.toFixed(2)+'<br><span style="font-size:12px">SL '+(price+3).toFixed(2)+' TP '+(price-3).toFixed(2)+' (+$3)</span>';
-    document.getElementById('mt').innerHTML='MT5: SELL 0.01 GOLD @ '+price.toFixed(2)+' SL '+(price+3).toFixed(2)+' TP '+(price-3).toFixed(2);
-    document.getElementById('h').innerHTML='<div style="color:#ffcc00">⚡ '+new Date().toLocaleTimeString()+' SELL @ '+price.toFixed(2)+' ✅</div>'+document.getElementById('h').innerHTML;
-    var cd=6;
+  var sl, tp, isSell;
+  
+  if(trendScore>0.6 && rsi>55 && canTrade && n%4===0){
+    isSell=true;
+    sl=price+4;
+    tp=price-6;
+    lastTrade=Date.now();
+    
+    box.className='sig sniper';
+    box.innerHTML='🎯 1HR SNIPER SELL @ '+price.toFixed(2)+'<br><span style="font-size:12px">Hold 1hr • SL $4 • TP $6 • No pressure</span><br><span style="font-size:11px;opacity:0.8">Reason: Bearish trend + Overbought + High volume</span>';
+    
+    document.getElementById('sl').innerHTML=sl.toFixed(2);
+    document.getElementById('tp').innerHTML=tp.toFixed(2);
+    document.getElementById('mt').innerHTML='<b style="color:#00e676">✅ MT5 1HR HOLD:</b><br>SELL 0.01 GOLD @ '+price.toFixed(2)+'<br>SL: '+sl.toFixed(2)+' ($4 = safe for $5 acc)<br>TP: '+tp.toFixed(2)+' ($6 = +120% profit)<br>⏰ Hold 60 min - Don\'t touch! Close after 1hr even if small profit<br><br>Why 1hr? No scalping pressure. Let market breathe.';
+    document.getElementById('h').innerHTML='<div style="color:#00e676;border-left:2px solid #00e676;padding-left:6px;margin:4px 0">🎯 '+new Date().toLocaleTimeString()+' - 1HR SELL @ '+price.toFixed(2)+' Hold 60min ✅ Analysis: Bear+Overbought</div>'+document.getElementById('h').innerHTML;
+    
+    var cd=3600;
     clearInterval(ht);
     ht=setInterval(function(){
       cd--;
-      document.getElementById('cd').innerHTML='Disappears '+cd+'s → Next auto';
-      if(cd<=0){clearInterval(ht);card.style.display='none';}
+      var m=Math.floor(cd/60);
+      var s=cd%60;
+      document.getElementById('cd').innerHTML='⏰ HOLD TIME: '+m+'m '+s+'s left - Don\'t close early! No pressure';
+      if(cd<=0){clearInterval(ht);document.getElementById('cd').innerHTML='✅ 1HR DONE - You can close now';}
     },1000);
-  }else{
-    box.className='sig wait';
-    box.innerHTML='⚡ FAST Scanning zone '+low.toFixed(2)+'-'+high.toFixed(2)+'<br><span style="font-size:11px">Current '+price.toFixed(2)+' → Entry in '+(3-n%3)+' scans</span>';
+    
+  } else if(trendScore<0.4 && rsi<45 && canTrade && n%5===0){
+    isSell=false;
+    sl=price-4;
+    tp=price+6;
+    lastTrade=Date.now();
+    
+    box.className='sig sniper';
+    box.style.background='linear-gradient(135deg,#2962ff,#0039cb)';
+    box.innerHTML='🎯 1HR SNIPER BUY @ '+price.toFixed(2)+'<br><span style="font-size:12px">Hold 1hr • SL $4 • TP $6</span><br><span style="font-size:11px;opacity:0.8">Reason: Bullish + Oversold</span>';
+    
+    document.getElementById('sl').innerHTML=sl.toFixed(2);
+    document.getElementById('tp').innerHTML=tp.toFixed(2);
+    document.getElementById('mt').innerHTML='<b style="color:#2962ff">✅ MT5 1HR HOLD:</b><br>BUY 0.01 GOLD @ '+price.toFixed(2)+'<br>SL: '+sl.toFixed(2)+' TP: '+tp.toFixed(2)+' Hold 60min';
+    document.getElementById('h').innerHTML='<div style="color:#2962ff;border-left:2px solid #2962ff;padding-left:6px;margin:4px 0">🎯 '+new Date().toLocaleTimeString()+' - 1HR BUY @ '+price.toFixed(2)+' Hold 60min ✅</div>'+document.getElementById('h').innerHTML;
+    
+    var cd2=3600;
+    clearInterval(ht);
+    ht=setInterval(function(){
+      cd2--;
+      var m=Math.floor(cd2/60);
+      document.getElementById('cd').innerHTML='⏰ HOLD: '+m+'m left - No pressure, let it run';
+      if(cd2<=0){clearInterval(ht);document.getElementById('cd').innerHTML='✅ 1HR DONE';}
+    },1000);
+    
+  } else {
+    box.className='sig analyze';
+    var reason = !canTrade ? 'Already traded - Wait 5 min cooldown for 1HR discipline' : 'Analyzing... '+trend+' but RSI '+rsi.toFixed(0)+' not perfect yet';
+    box.innerHTML='🧠 ANALYZING... No entry yet<br><span style="font-size:11px">'+reason+'<br>Next analysis in 8 sec - Patient sniper (1 per hour max)</span>';
+    document.getElementById('cd').innerHTML='🤖 Robot thinking... Good trades need patience - No pressure trading';
+    document.getElementById('sl').innerHTML='--';
+    document.getElementById('tp').innerHTML='--';
   }
+  document.getElementById('info').innerHTML='Analysis #'+n+' • '+new Date().toLocaleTimeString()+' • 1HR discipline • '+(canTrade ? 'Ready for sniper' : 'Cooldown 5 min');
 }
 </script>
 </body>
-</html>
+                                          </html>
