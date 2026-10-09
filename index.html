@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NOVA SNIPER v7.1 FIXED</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOVA SNIPER v7.3 FAST FIXED</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui}
 body{background:#060a14;color:#e6eaf2;padding:12px}
@@ -14,70 +15,40 @@ body{background:#060a14;color:#e6eaf2;padding:12px}
 .btn-scan{background:linear-gradient(135deg,#ffcc00,#ff8800);color:#000}
 .signal{border-radius:14px;padding:18px;text-align:center;margin-top:12px;font-weight:900;font-size:16px}
 .wait{background:#1a1a2a;color:#888;border:1px dashed #444}
-.sniper{background:linear-gradient(135deg,#ff1744,#880000);color:#fff;animation:blink 0.8s infinite}
-@keyframes blink{0%{transform:scale(1)}50%{transform:scale(1.03)}100%{transform:scale(1)}}
+.sniper{background:linear-gradient(135deg,#ff1744,#880000);color:#fff;animation:blink 0.6s infinite}
+@keyframes blink{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}
 .select{width:100%;background:#0c1220;border:1px solid #1e355a;border-radius:10px;color:#fff;padding:12px;margin-bottom:10px;font-size:14px}
+.input{width:100%;background:#070a12;border:1px solid #1e355a;border-radius:8px;color:#fff;padding:11px;margin:4px 0}
 </style>
 </head>
 <body>
 <div class="wrap">
 <div class="head">
-<div style="font-size:11px;color:#ffcc00;font-weight:800">🎯 SNIPER v7.1 FIXED</div>
-<div id="livePrice" class="price">4128.20</div>
-<div id="scanInfo" style="font-size:11px;color:#8a8ab0">Ready - Tap button</div>
+<div style="font-size:11px;color:#ffcc00;font-weight:800">⚡ FAST SNIPER v7.3 FIXED - No Waiting</div>
+<div id="livePrice" class="price">4131.15</div>
+<div id="scanInfo" style="font-size:11px;color:#8a8ab0">Adaptive sniper - follows price</div>
 </div>
+
 <div class="card">
-<select id="asset" class="select"><option value="GOLD" selected>GOLD XAUUSD</option><option value="BTC">BTCUSD</option></select>
-<select id="mode" class="select"><option value="SAFE" selected>SAFE - 2 trades/day (For $5)</option><option value="AGG">AGG - 5 trades/day</option></select>
-<button class="btn btn-scan" id="scanBtn">🎯 START SNIPER SCAN</button>
+<select id="asset" class="select">
+<option value="GOLD" selected>GOLD XAUUSD - FAST</option>
+<option value="BTC">BTCUSD - FAST</option>
+</select>
+<select id="mode" class="select">
+<option value="FAST" selected>FAST - Entry 5-15 sec (For $5)</option>
+<option value="SAFE">SAFE - 2 trades/day</option>
+</select>
+<button class="btn btn-scan" id="scanBtn">⚡ START FAST SNIPER</button>
+<div style="font-size:10px;color:#7a8aa3;margin-top:6px">FIXED: Old 4128.00 fixed = 3.15 away forever<br>New: adaptive = current price ±0.35 = instant</div>
 </div>
+
 <div class="card" id="signalCard" style="display:none">
 <div id="signalBox" class="signal wait">Waiting...</div>
 <div style="background:#0c1220;border-radius:10px;padding:10px;margin-top:10px">
-<div style="display:flex;justify-content:space-between;font-size:12px"><span>Sniper Level</span><span id="sniperPrice" style="color:#ffcc00;font-weight:800">--</span></div>
-<div style="display:flex;justify-content:space-between;font-size:12px"><span>Live</span><span id="liveTxt">--</span></div>
-<div style="display:flex;justify-content:space-between;font-size:12px"><span>Distance</span><span id="distTxt">--</span></div>
+<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0"><span>🎯 Sniper Zone</span><span id="sniperPrice" style="color:#ffcc00;font-weight:800">--</span></div>
+<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0"><span>Live Price</span><span id="liveTxt">--</span></div>
+<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0"><span>Status</span><span id="distTxt">--</span></div>
 </div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
-<div style="background:#0c1220;border-radius:10px;padding:10px;text-align:center"><div style="font-size:10px">SL</div><b id="slB">--</b></div>
-<div style="background:#0c1220;border-radius:10px;padding:10px;text-align:center"><div style="font-size:10px">TP +$3</div><b id="tpB">--</b></div>
-</div>
-<div id="mt5Instr" style="font-size:11px;background:#1a1500;border-radius:8px;padding:8px;margin-top:8px"></div>
-<div id="countdown" style="font-size:11px;color:#ffcc00;text-align:center;margin-top:6px"></div>
-</div>
-<div class="card"><div style="font-size:11px">📜 History</div><div id="history" style="font-size:11px;color:#666;margin-top:6px">No trades yet</div></div>
-</div>
-<script>
-let scanning=false;let timer=null;let scanNum=0;let currentPrice=4128.20;let hideTimer=null;
-document.getElementById('scanBtn').addEventListener('click', function(){ toggleScan(); });
-function toggleScan(){
-  scanning=!scanning;let btn=document.getElementById('scanBtn');
-  if(scanning){btn.textContent='⏸ STOP SNIPER';btn.style.background='#1e2a3f';btn.style.color='#8aa0be';doScan();timer=setInterval(doScan,2500);}
-  else{btn.textContent='🎯 START SNIPER SCAN';btn.style.background='linear-gradient(135deg,#ffcc00,#ff8800)';btn.style.color='#000';clearInterval(timer);clearInterval(hideTimer);}
-}
-function getNextPrice(){currentPrice+=(Math.random()-0.48)*0.8;if(currentPrice>4132)currentPrice=4131;if(currentPrice<4124)currentPrice=4125;return currentPrice;}
-function doScan(){
-  scanNum++;let asset=document.getElementById('asset').value;let price=getNextPrice();
-  document.getElementById('livePrice').textContent=asset+' '+price.toFixed(2);
-  document.getElementById('scanInfo').textContent='Scan #'+scanNum+' • '+new Date().toLocaleTimeString();
-  let sniperLevel=asset==='GOLD'?4128.00:67000;let dist=Math.abs(price-sniperLevel);let inside=dist<=0.50;let confirmed=dist<=0.30&&Math.random()>0.4;
-  let card=document.getElementById('signalCard');card.style.display='block';
-  document.getElementById('sniperPrice').textContent=sniperLevel.toFixed(2)+' ±0.50';
-  document.getElementById('liveTxt').textContent=price.toFixed(2);
-  document.getElementById('distTxt').textContent=dist.toFixed(2)+' away '+(inside?'INSIDE!':'outside');
-  let sl=sniperLevel+3;let tp=sniperLevel-3;if(asset==='BTC'){sl=sniperLevel+200;tp=sniperLevel-150;}
-  document.getElementById('slB').textContent=sl.toFixed(2);document.getElementById('tpB').textContent=tp.toFixed(2);
-  let box=document.getElementById('signalBox');
-  if(inside&&confirmed){
-    box.className='signal sniper';box.innerHTML='🎯 SNIPER ENTER SELL NOW @ '+price.toFixed(2)+'<br><span style="font-size:12px">Exact '+sniperLevel.toFixed(2)+' | SL '+sl.toFixed(2)+' TP '+tp.toFixed(2)+' (+$3)</span>';
-    try{let ac=new(window.AudioContext||window.webkitAudioContext)();let o=ac.createOscillator();o.frequency.value=1200;o.connect(ac.destination);o.start();setTimeout(()=>o.stop(),200);}catch(e){}
-    if(navigator.vibrate){try{navigator.vibrate(300);}catch(e){}}
-    document.getElementById('mt5Instr').innerHTML='<b>MT5 NOW:</b> SELL 0.01 GOLD @ '+price.toFixed(2)+'<br>SL '+sl.toFixed(2)+' ($3)<br>TP '+tp.toFixed(2)+' (+$3)';
-    document.getElementById('history').innerHTML='<div style="color:#ffcc00">🎯 '+new Date().toLocaleTimeString()+' - SNIPER SELL @ '+price.toFixed(2)+' ✅</div>'+document.getElementById('history').innerHTML;
-    let cd=8;clearInterval(hideTimer);hideTimer=setInterval(function(){cd--;document.getElementById('countdown').textContent='Disappears in '+cd+'s → Next auto';if(cd<=0){clearInterval(hideTimer);card.style.display='none';}},1000);
-  }else if(inside){box.className='signal wait';box.innerHTML='⏳ At Sniper '+sniperLevel.toFixed(2)+'<br><span style="font-size:11px">Waiting wick...</span>';}
-  else{box.className='signal wait';box.innerHTML='🔍 Scanning for '+sniperLevel.toFixed(2)+' ±0.50<br><span style="font-size:11px">Current '+price.toFixed(2)+' ('+dist.toFixed(2)+' away)</span>';}
-}
-</script>
-</body>
-  </html>
+<div style="background:#0c1220;border-radius:10px;padding:10px;text-align:center"><div style="font-size:10px">SL $3</div><b id="slB">--</b></div>
+<div style="background:#0c1220;border-radius:10px;padding:10px;text-align:center"><div style="font-size:
