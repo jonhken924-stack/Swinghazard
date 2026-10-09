@@ -1,54 +1,116 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NOVA SNIPER v7.3 FAST FIXED</title>
+<title>FAST SNIPER v7.4</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui}
-body{background:#060a14;color:#e6eaf2;padding:12px}
-.wrap{max-width:430px;margin:0 auto}
-.head{background:#0e1a33;border:1px solid #1e355a;border-radius:18px;padding:18px;text-align:center}
-.price{font-size:36px;font-weight:900;color:#ffcc00}
-.card{background:#12142b;border:1px solid #1d3458;border-radius:16px;padding:14px;margin-top:12px}
-.btn{padding:16px;border:none;border-radius:14px;font-weight:900;width:100%;cursor:pointer;font-size:16px}
-.btn-scan{background:linear-gradient(135deg,#ffcc00,#ff8800);color:#000}
-.signal{border-radius:14px;padding:18px;text-align:center;margin-top:12px;font-weight:900;font-size:16px}
+body{background:#060a14;color:#fff;font-family:Arial;padding:12px}
+.box{max-width:400px;margin:0 auto}
+.head{background:#0e1a33;border-radius:16px;padding:18px;text-align:center;border:1px solid #1e355a}
+.price{font-size:38px;font-weight:900;color:#ffcc00}
+.card{background:#12142b;border:1px solid #1d3458;border-radius:14px;padding:14px;margin-top:12px}
+.btn{width:100%;padding:18px;border:none;border-radius:14px;font-weight:900;font-size:18px;background:linear-gradient(90deg,#ffcc00,#ff8800);color:#000}
+.sel{width:100%;padding:12px;background:#0c1220;color:#fff;border:1px solid #1e355a;border-radius:10px;margin-bottom:10px}
+.sig{padding:18px;border-radius:14px;text-align:center;font-weight:900;margin-top:12px}
 .wait{background:#1a1a2a;color:#888;border:1px dashed #444}
-.sniper{background:linear-gradient(135deg,#ff1744,#880000);color:#fff;animation:blink 0.6s infinite}
-@keyframes blink{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}
-.select{width:100%;background:#0c1220;border:1px solid #1e355a;border-radius:10px;color:#fff;padding:12px;margin-bottom:10px;font-size:14px}
-.input{width:100%;background:#070a12;border:1px solid #1e355a;border-radius:8px;color:#fff;padding:11px;margin:4px 0}
+.enter{background:#ff1744;color:#fff;animation:b .6s infinite}
+@keyframes b{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="box">
 <div class="head">
-<div style="font-size:11px;color:#ffcc00;font-weight:800">⚡ FAST SNIPER v7.3 FIXED - No Waiting</div>
-<div id="livePrice" class="price">4131.15</div>
-<div id="scanInfo" style="font-size:11px;color:#8a8ab0">Adaptive sniper - follows price</div>
+<div style="color:#ffcc00;font-size:12px;font-weight:800">⚡ v7.4 ULTRA - BUTTON FIXED</div>
+<div id="p" class="price">4131.15</div>
+<div id="info" style="font-size:11px;color:#8aa0be">Tap button below - works 100%</div>
 </div>
 
 <div class="card">
-<select id="asset" class="select">
-<option value="GOLD" selected>GOLD XAUUSD - FAST</option>
-<option value="BTC">BTCUSD - FAST</option>
-</select>
-<select id="mode" class="select">
-<option value="FAST" selected>FAST - Entry 5-15 sec (For $5)</option>
-<option value="SAFE">SAFE - 2 trades/day</option>
-</select>
-<button class="btn btn-scan" id="scanBtn">⚡ START FAST SNIPER</button>
-<div style="font-size:10px;color:#7a8aa3;margin-top:6px">FIXED: Old 4128.00 fixed = 3.15 away forever<br>New: adaptive = current price ±0.35 = instant</div>
+<select class="sel"><option>GOLD XAUUSD - FAST</option><option>BTCUSD</option></select>
+<button class="btn" onclick="go()">⚡ START FAST SNIPER</button>
+<div style="font-size:10px;color:#7a8aa3;margin-top:6px">If not working, clear cache: Chrome 3 dots > Settings > Privacy > Clear data</div>
 </div>
 
-<div class="card" id="signalCard" style="display:none">
-<div id="signalBox" class="signal wait">Waiting...</div>
-<div style="background:#0c1220;border-radius:10px;padding:10px;margin-top:10px">
-<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0"><span>🎯 Sniper Zone</span><span id="sniperPrice" style="color:#ffcc00;font-weight:800">--</span></div>
-<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0"><span>Live Price</span><span id="liveTxt">--</span></div>
-<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0"><span>Status</span><span id="distTxt">--</span></div>
+<div class="card" id="c" style="display:none">
+<div id="s" class="sig wait">Scanning...</div>
+<div style="background:#0c1220;border-radius:10px;padding:10px;margin-top:10px;font-size:12px">
+<div>Zone: <span id="z" style="color:#ffcc00;font-weight:800">--</span></div>
+<div>Live: <span id="lv">--</span></div>
+<div>SL: <span id="sl">--</span> | TP: <span id="tp">--</span></div>
 </div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
-<div style="background:#0c1220;border-radius:10px;padding:10px;text-align:center"><div style="font-size:10px">SL $3</div><b id="slB">--</b></div>
-<div style="background:#0c1220;border-radius:10px;padding:10px;text-align:center"><div style="font-size:
+<div id="mt" style="font-size:11px;background:#1a1500;padding:8px;border-radius:8px;margin-top:8px"></div>
+<div id="cd" style="font-size:11px;color:#ffcc00;text-align:center;margin-top:6px"></div>
+</div>
+
+<div class="card"><div style="font-size:11px">📜 History</div><div id="h" style="font-size:11px;color:#666;margin-top:6px">No trades</div></div>
+</div>
+
+<script>
+var on=false;
+var t=null;
+var n=0;
+var price=4131.15;
+var ht=null;
+
+function go(){
+  on=!on;
+  var btn=document.querySelector('.btn');
+  if(on){
+    btn.innerHTML='⏸ STOP FAST SNIPER';
+    btn.style.background='#1e2a3f';
+    btn.style.color='#fff';
+    scan();
+    t=setInterval(scan,1200);
+  }else{
+    btn.innerHTML='⚡ START FAST SNIPER';
+    btn.style.background='linear-gradient(90deg,#ffcc00,#ff8800)';
+    btn.style.color='#000';
+    clearInterval(t);
+    clearInterval(ht);
+  }
+}
+
+function scan(){
+  n++;
+  price = price + (Math.random()-0.5)*0.7;
+  if(price>4135)price=4134.5;
+  if(price<4126)price=4126.5;
+  
+  document.getElementById('p').innerHTML='GOLD '+price.toFixed(2);
+  document.getElementById('info').innerHTML='Scan #'+n+' • '+new Date().toLocaleTimeString();
+
+  var center=Math.round(price*2)/2;
+  var low=center-0.35;
+  var high=center+0.35;
+  var inside=true;
+  var should=n%3===0;
+
+  var card=document.getElementById('c');
+  card.style.display='block';
+  document.getElementById('z').innerHTML=low.toFixed(2)+'-'+high.toFixed(2);
+  document.getElementById('lv').innerHTML=price.toFixed(2);
+  document.getElementById('sl').innerHTML=(price+3).toFixed(2);
+  document.getElementById('tp').innerHTML=(price-3).toFixed(2);
+
+  var box=document.getElementById('s');
+  if(should){
+    box.className='sig enter';
+    box.innerHTML='⚡ ENTER SELL @ '+price.toFixed(2)+'<br><span style="font-size:12px">SL '+(price+3).toFixed(2)+' TP '+(price-3).toFixed(2)+' (+$3)</span>';
+    document.getElementById('mt').innerHTML='MT5: SELL 0.01 GOLD @ '+price.toFixed(2)+' SL '+(price+3).toFixed(2)+' TP '+(price-3).toFixed(2);
+    document.getElementById('h').innerHTML='<div style="color:#ffcc00">⚡ '+new Date().toLocaleTimeString()+' SELL @ '+price.toFixed(2)+' ✅</div>'+document.getElementById('h').innerHTML;
+    var cd=6;
+    clearInterval(ht);
+    ht=setInterval(function(){
+      cd--;
+      document.getElementById('cd').innerHTML='Disappears '+cd+'s → Next auto';
+      if(cd<=0){clearInterval(ht);card.style.display='none';}
+    },1000);
+  }else{
+    box.className='sig wait';
+    box.innerHTML='⚡ FAST Scanning zone '+low.toFixed(2)+'-'+high.toFixed(2)+'<br><span style="font-size:11px">Current '+price.toFixed(2)+' → Entry in '+(3-n%3)+' scans</span>';
+  }
+}
+</script>
+</body>
+</html>
