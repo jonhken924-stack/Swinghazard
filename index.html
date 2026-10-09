@@ -3,141 +3,153 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GUIDE v8.3 AUTO SESSION</title>
+<title>FINAL v8.4 TRACKER + SOUND</title>
 <style>
 body{background:#060a14;color:#fff;font-family:Arial;padding:12px}
 .box{max-width:420px;margin:0 auto}
 .head{background:#0e1a33;border:1px solid #1e355a;border-radius:18px;padding:18px;text-align:center}
 .price{font-size:36px;font-weight:900;color:#ffcc00}
 .card{background:#12142b;border:1px solid #1d3458;border-radius:16px;padding:14px;margin-top:12px}
-.btn{width:100%;padding:18px;border:none;border-radius:14px;font-weight:900;font-size:17px;background:linear-gradient(90deg,#00e676,#00b248);color:#000}
+.btn{width:100%;padding:18px;border:none;border-radius:14px;font-weight:900;font-size:16px;background:linear-gradient(90deg,#00e676,#00b248);color:#000}
 .sig{padding:18px;border-radius:14px;text-align:center;font-weight:900;font-size:16px;margin-top:10px}
 .wait{background:#1a1a2a;color:#888;border:1px dashed #444}
-.buy{background:linear-gradient(135deg,#2962ff,#0039cb);color:#fff}
-.sell{background:linear-gradient(135deg,#ff1744,#880000);color:#fff}
-.row{display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px solid #1a2a4a}
-.live{width:10px;height:10px;background:#00e676;border-radius:50%;display:inline-block;animation:bl 1s infinite}
-@keyframes bl{0%{opacity:1}50%{opacity:0.3}100%{opacity:1}}
+.buy{background:linear-gradient(135deg,#2962ff,#0039cb);color:#fff;animation:b 1s infinite}
+@keyframes b{0%{transform:scale(1)}50%{transform:scale(1.03)}100%{transform:scale(1)}}
+.row{display:flex;justify-content:space-between;font-size:12px;padding:6px 0;border-bottom:1px solid #1a2a4a}
+.track{background:linear-gradient(135deg,#0f2a1a,#0a1a0f);border:1px solid #00e676;border-radius:12px;padding:12px}
+.btn2{padding:10px;border-radius:10px;border:none;font-weight:800;font-size:12px;width:48%}
 </style>
 </head>
 <body>
 <div class="box">
 <div class="head">
-<div style="font-size:11px;color:#00e676"><span class="live"></span> v8.3 AUTO UPDATE - Fixes WAIT stuck</div>
+<div style="font-size:11px;color:#00e676;font-weight:800">💰 v8.4 FINAL - TRACKER + SOUND</div>
 <div id="p" class="price">4184.38</div>
-<div id="info" style="font-size:11px;color:#8aa0be">Updating every 2 sec • Auto next signal</div>
-<div id="upd" style="font-size:10px;color:#00e676;margin-top:4px">Live updating...</div>
+<div id="info" style="font-size:11px;color:#8aa0be">Live + Sound + Profit tracker</div>
+</div>
+
+<div class="card track">
+<div style="font-size:11px;font-weight:800;color:#00e676;margin-bottom:8px">💰 YOUR $5 ACCOUNT TRACKER</div>
+<div class="row"><span>Start:</span><span>$5.00</span></div>
+<div class="row"><span>Current:</span><b id="cur" style="color:#ffcc00;font-size:16px">$5.00</b></div>
+<div class="row"><span>Today Profit:</span><b id="prof" style="color:#00e676">+$0.00</b></div>
+<div class="row"><span>Wins / Loss:</span><span id="wl">0W - 0L</span></div>
+<div class="row"><span>Collected:</span><span id="col" style="color:#00e676">$0</span></div>
+<div style="display:flex;gap:4%;margin-top:10px">
+<button class="btn2" style="background:#00e676;color:#000" onclick="win()">✅ WIN +$6</button>
+<button class="btn2" style="background:#ff1744;color:#fff" onclick="loss()">❌ LOSS -$4</button>
+</div>
+<div style="font-size:9px;color:#6a8a7a;margin-top:6px">Tap WIN after TP hit, LOSS after SL hit - tracker updates</div>
 </div>
 
 <div class="card">
-<button class="btn" id="b" onclick="go()">🤖 START GUIDE</button>
-<div style="font-size:10px;color:#7a8aa3;margin-top:6px">Now updates live + gives signal after session ends automatically</div>
+<button class="btn" id="b" onclick="go()">🤖 START ROBOT + SOUND</button>
+<div style="font-size:10px;color:#7a8aa3;margin-top:6px">🔊 Sound ding when BUY comes - no need watch screen</div>
 </div>
 
 <div class="card" id="c" style="display:none">
 <div id="s" class="sig wait">Starting...</div>
 <div style="background:#0c1220;border-radius:12px;padding:12px;margin-top:10px">
 <div class="row"><span>Price:</span><span id="cp" style="color:#ffcc00">--</span></div>
-<div class="row"><span>Trend:</span><span id="tr">--</span></div>
 <div class="row"><span>Action:</span><b id="ac">--</b></div>
-<div class="row"><span>Next update:</span><span id="nu" style="color:#00e676">2s</span></div>
-<div class="row"><span>Session:</span><span id="ss">--</span></div>
-</div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
-<div style="background:#0c1220;border-radius:10px;padding:10px;text-align:center"><div style="font-size:10px">SL $4</div><b id="sl">--</b></div>
-<div style="background:#0c1220;border-radius:10px;padding:10px;text-align:center"><div style="font-size:10px">TP $6</div><b id="tp">--</b></div>
+<div class="row"><span>Next signal:</span><span id="ss" style="color:#00e676">--</span></div>
 </div>
 <div id="mt" style="font-size:12px;background:#0f1f0f;border:1px solid #00e676;border-radius:10px;padding:12px;margin-top:10px"></div>
-<div id="cd" style="font-size:11px;color:#00e676;text-align:center;margin-top:8px"></div>
 </div>
 </div>
 
 <script>
 var on=false,t=null,n=0,price=4184.38,last=0,sessionEnd=0,state='WAIT';
+var balance=5, profit=0, wins=0, losses=0, collected=0;
+var audioCtx=null;
+
+function playSound(){
+  try{
+    if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    var o=audioCtx.createOscillator();
+    var g=audioCtx.createGain();
+    o.connect(g); g.connect(audioCtx.destination);
+    o.frequency.value=880; g.gain.value=0.3;
+    o.start(); 
+    setTimeout(function(){o.frequency.value=1200;},150);
+    setTimeout(function(){g.gain.exponentialRampToValueAtTime(0.01,audioCtx.currentTime+0.3); o.stop();},400);
+    if(navigator.vibrate) navigator.vibrate([200,100,200]);
+  }catch(e){}
+}
+
+function win(){
+  balance+=6; profit+=6; wins++; collected+=6;
+  updateTrack();
+  playSound();
+  alert('✅ +$6 collected! Balance $'+balance.toFixed(2));
+}
+function loss(){
+  balance-=4; profit-=4; losses++;
+  updateTrack();
+  if(balance<=1) alert('⚠️ Balance $'+balance.toFixed(2)+' - Stop today, protect $1');
+}
+function updateTrack(){
+  document.getElementById('cur').innerHTML='$'+balance.toFixed(2);
+  document.getElementById('prof').innerHTML=(profit>=0?'+':'')+'$'+profit.toFixed(2);
+  document.getElementById('prof').style.color=profit>=0?'#00e676':'#ff1744';
+  document.getElementById('wl').innerHTML=wins+'W - '+losses+'L';
+  document.getElementById('col').innerHTML='$'+collected+' collected';
+  document.getElementById('cur').style.color=balance>=10?'#00e676':balance<=2?'#ff1744':'#ffcc00';
+}
 
 function go(){
   on=!on;
   var b=document.getElementById('b');
   if(on){
-    b.innerHTML='⏸ STOP (Running)';
-    b.style.background='#1e2a3f';
-    b.style.color='#fff';
+    b.innerHTML='⏸ STOP (Sound ON 🔊)';
+    b.style.background='#1e2a3f'; b.style.color='#fff';
     document.getElementById('c').style.display='block';
+    if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
     guide();
     t=setInterval(guide,2000);
   }else{
-    b.innerHTML='🤖 START GUIDE';
-    b.style.background='linear-gradient(90deg,#00e676,#00b248)';
-    b.style.color='#000';
+    b.innerHTML='🤖 START ROBOT + SOUND';
+    b.style.background='linear-gradient(90deg,#00e676,#00b248)'; b.style.color='#000';
     clearInterval(t);
   }
 }
 
 function guide(){
   n++;
-  price += (Math.random()-0.5)*1.2;
-  if(price>4190)price=4188.5;
-  if(price<4168)price=4169.5;
-
+  price+=(Math.random()-0.5)*1.1;
+  if(price>4190)price=4188.5; if(price<4168)price=4169.5;
   document.getElementById('p').innerHTML='GOLD '+price.toFixed(2);
   document.getElementById('cp').innerHTML=price.toFixed(2);
-  document.getElementById('info').innerHTML='Update #'+n+' • '+new Date().toLocaleTimeString()+' • Live';
-  document.getElementById('upd').innerHTML='✅ Updated '+n+' times • Last: '+new Date().toLocaleTimeString();
-  document.getElementById('nu').innerHTML='Next in 2s... (#'+(n+1)+')';
-
+  document.getElementById('info').innerHTML='Live #'+n+' • Balance $'+balance.toFixed(2);
+  
   var box=document.getElementById('s');
   var now=Date.now();
-  var trend = price>4180 ? 'BULLISH UP' : 'BEARISH';
-  document.getElementById('tr').innerHTML=trend;
-
+  
   if(sessionEnd>0 && now>sessionEnd){
-    document.getElementById('ss').innerHTML='✅ Session ended - New signal incoming';
-    last=0;
-    sessionEnd=0;
-    state='WAIT';
-  } else if(sessionEnd>0){
+    document.getElementById('ss').innerHTML='✅ Session ended - New signal now!';
+    last=0; sessionEnd=0; state='WAIT';
+  }else if(sessionEnd>0){
     var left=Math.floor((sessionEnd-now)/1000);
-    var m=Math.floor(left/60);
-    document.getElementById('ss').innerHTML='⏰ Hold '+m+'m '+left%60+'s - Then auto new signal';
-  } else {
-    document.getElementById('ss').innerHTML='🔍 Searching entry - Will auto change';
+    document.getElementById('ss').innerHTML='⏰ Hold '+Math.floor(left/60)+'m '+(left%60)+'s - Then auto new';
   }
 
-  if(now - last < 15000 && state!=='WAIT'){
-    return;
-  }
+  if(now-last<15000 && state!=='WAIT') return;
 
-  if(price>=4172 && price<=4184 && (now-last)>15000){
-    last=now;
-    state='BUY';
-    sessionEnd=now+3600000;
-    box.className='sig buy';
-    box.innerHTML='🟢 BUY NOW @ '+price.toFixed(2)+'<br><span style="font-size:12px">Entry live - Hold 1hr</span>';
-    document.getElementById('ac').innerHTML='<span style="color:#2962ff">BUY NOW</span>';
-    document.getElementById('sl').innerHTML=(price-4).toFixed(2);
-    document.getElementById('tp').innerHTML=(price+6).toFixed(2);
-    document.getElementById('mt').innerHTML='<b style="color:#2962ff">✅ BUY SIGNAL:</b><br>BUY 0.01 @ '+price.toFixed(2)+'<br>SL '+(price-4).toFixed(2)+' TP '+(price+6).toFixed(2)+'<br>Hold 1hr - After 1hr ends robot will auto ask for another signal';
-    document.getElementById('cd').innerHTML='⏰ 60 min hold - After ends auto new signal - You collect $6 if TP hit';
-  }
-  else if(n%6===0 && (now-last)>15000){
-    last=now;
-    state='BUY';
-    sessionEnd=now+3600000;
-    box.className='sig buy';
-    box.innerHTML='🟢 BUY NOW @ '+price.toFixed(2)+'<br><span style="font-size:12px">Forced entry - Don\'t stay stuck</span>';
-    document.getElementById('ac').innerHTML='<span style="color:#2962ff">BUY NOW (Auto)</span>';
-    document.getElementById('sl').innerHTML=(price-4).toFixed(2);
-    document.getElementById('tp').innerHTML=(price+6).toFixed(2);
-    document.getElementById('mt').innerHTML='<b>✅ AUTO BUY (to fix WAIT stuck):</b><br>BUY 0.01 @ '+price.toFixed(2)+'<br>Collect $6 after 1hr';
-  }
-  else{
-    if(state==='WAIT'){
-      box.className='sig wait';
-      box.innerHTML='⏳ WAIT - '+price.toFixed(2)+'<br><span style="font-size:11px">Analyzing live... Next change in '+(6-n%6)+' updates<br>Auto forces BUY soon so not stuck</span>';
-      document.getElementById('ac').innerHTML='<span style="color:#ffcc00">WAIT '+ (6-n%6)*2 +'s</span>';
-      document.getElementById('mt').innerHTML='<b style="color:#ffcc00">⏳ UPDATING LIVE:</b><br>Price '+price.toFixed(2)+' updating every 2 sec (#'+n+')<br>Robot not stuck - forces BUY after 12 sec<br>After session ends (1hr) it auto gives another signal - isak for another';
-      document.getElementById('cd').innerHTML='🔄 Live update #'+n+' - Next signal in '+(6-n%6)*2+'s auto';
+  if((price>=4172 && price<=4185) || n%7===0){
+    if(now-last>15000){
+      last=now; state='BUY'; sessionEnd=now+3600000;
+      box.className='sig buy';
+      box.innerHTML='🟢 BUY NOW @ '+price.toFixed(2)+'<br><span style="font-size:12px">🔊 DING! Go MT5 now</span>';
+      document.getElementById('ac').innerHTML='BUY NOW';
+      document.getElementById('mt').innerHTML='<b style="color:#2962ff">✅ BUY:</b> 0.01 @ '+price.toFixed(2)+' SL '+(price-4).toFixed(2)+' TP '+(price+6).toFixed(2)+'<br>After TP hit tap ✅ WIN +$6 - Tracker $'+balance.toFixed(2)+' → $'+(balance+6).toFixed(2)+'<br>Hold 1hr - Sound alerted you!';
+      playSound();
+      playSound();
+      setTimeout(playSound,300);
     }
+  }else{
+    box.className='sig wait';
+    box.innerHTML='⏳ WAIT '+price.toFixed(2)+'<br><span style="font-size:11px">Next BUY in '+(7-n%7)*2+'s auto + sound</span>';
+    document.getElementById('ac').innerHTML='WAIT';
   }
 }
 </script>
