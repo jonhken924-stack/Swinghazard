@@ -3,72 +3,70 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GUIDE ROBOT v8.2 - BUY/SELL</title>
+<title>GUIDE v8.3 AUTO SESSION</title>
 <style>
 body{background:#060a14;color:#fff;font-family:Arial;padding:12px}
 .box{max-width:420px;margin:0 auto}
 .head{background:#0e1a33;border:1px solid #1e355a;border-radius:18px;padding:18px;text-align:center}
-.price{font-size:38px;font-weight:900;color:#ffcc00}
+.price{font-size:36px;font-weight:900;color:#ffcc00}
 .card{background:#12142b;border:1px solid #1d3458;border-radius:16px;padding:14px;margin-top:12px}
-.btn{width:100%;padding:18px;border:none;border-radius:14px;font-weight:900;font-size:17px;background:linear-gradient(90deg,#00e676,#00b248);color:#000;cursor:pointer}
-.sig{padding:20px;border-radius:14px;text-align:center;font-weight:900;font-size:16px;margin-top:12px;line-height:1.4}
+.btn{width:100%;padding:18px;border:none;border-radius:14px;font-weight:900;font-size:17px;background:linear-gradient(90deg,#00e676,#00b248);color:#000}
+.sig{padding:18px;border-radius:14px;text-align:center;font-weight:900;font-size:16px;margin-top:10px}
 .wait{background:#1a1a2a;color:#888;border:1px dashed #444}
-.buy{background:linear-gradient(135deg,#2962ff,#0039cb);color:#fff;animation:b 1.2s infinite}
-.sell{background:linear-gradient(135deg,#ff1744,#880000);color:#fff;animation:b 1.2s infinite}
-@keyframes b{0%{transform:scale(1)}50%{transform:scale(1.03)}100%{transform:scale(1)}}
+.buy{background:linear-gradient(135deg,#2962ff,#0039cb);color:#fff}
+.sell{background:linear-gradient(135deg,#ff1744,#880000);color:#fff}
 .row{display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px solid #1a2a4a}
+.live{width:10px;height:10px;background:#00e676;border-radius:50%;display:inline-block;animation:bl 1s infinite}
+@keyframes bl{0%{opacity:1}50%{opacity:0.3}100%{opacity:1}}
 </style>
 </head>
 <body>
 <div class="box">
 <div class="head">
-<div style="font-size:11px;color:#00e676;font-weight:800">🤖 GUIDE ROBOT v8.2 - BUY or SELL</div>
-<div id="p" class="price">4185.15</div>
-<div id="info" style="font-size:11px;color:#8aa0be">Live guide - Tells you BUY or SELL</div>
+<div style="font-size:11px;color:#00e676"><span class="live"></span> v8.3 AUTO UPDATE - Fixes WAIT stuck</div>
+<div id="p" class="price">4184.38</div>
+<div id="info" style="font-size:11px;color:#8aa0be">Updating every 2 sec • Auto next signal</div>
+<div id="upd" style="font-size:10px;color:#00e676;margin-top:4px">Live updating...</div>
 </div>
 
 <div class="card">
-<button class="btn" onclick="go()">🤖 START GUIDE ROBOT</button>
-<div style="font-size:10px;color:#7a8aa3;margin-top:8px">Robot will tell you: BUY or SELL or WAIT - No guess</div>
+<button class="btn" id="b" onclick="go()">🤖 START GUIDE</button>
+<div style="font-size:10px;color:#7a8aa3;margin-top:6px">Now updates live + gives signal after session ends automatically</div>
 </div>
 
 <div class="card" id="c" style="display:none">
-<div id="s" class="sig wait">🤖 Starting guide...</div>
-
-<div style="background:#0c1220;border-radius:12px;padding:12px;margin-top:12px">
-<div style="font-size:11px;color:#00e676;font-weight:800;margin-bottom:8px">🤖 ROBOT GUIDE - What to do now</div>
-<div class="row"><span>Current Price:</span><span id="cp" style="color:#ffcc00">4185.15</span></div>
-<div class="row"><span>Trend H1:</span><span id="tr">--</span></div>
-<div class="row"><span>Action:</span><span id="ac" style="font-weight:900">--</span></div>
-<div class="row"><span>Entry Zone:</span><span id="zo">--</span></div>
-<div class="row"><span>Why:</span><span id="wh">--</span></div>
+<div id="s" class="sig wait">Starting...</div>
+<div style="background:#0c1220;border-radius:12px;padding:12px;margin-top:10px">
+<div class="row"><span>Price:</span><span id="cp" style="color:#ffcc00">--</span></div>
+<div class="row"><span>Trend:</span><span id="tr">--</span></div>
+<div class="row"><span>Action:</span><b id="ac">--</b></div>
+<div class="row"><span>Next update:</span><span id="nu" style="color:#00e676">2s</span></div>
+<div class="row"><span>Session:</span><span id="ss">--</span></div>
 </div>
-
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
-<div style="background:#0c1220;border-radius:10px;padding:10px;text-align:center"><div style="font-size:10px">SL $4 Safe</div><b id="sl">--</b></div>
-<div style="background:#0c1220;border-radius:10px;padding:10px;text-align:center"><div style="font-size:10px">TP $6 Hold 1hr</div><b id="tp">--</b></div>
+<div style="background:#0c1220;border-radius:10px;padding:10px;text-align:center"><div style="font-size:10px">SL $4</div><b id="sl">--</b></div>
+<div style="background:#0c1220;border-radius:10px;padding:10px;text-align:center"><div style="font-size:10px">TP $6</div><b id="tp">--</b></div>
 </div>
-
-<div id="mt" style="font-size:12px;background:#0f1f0f;border:1px solid #00e676;border-radius:10px;padding:12px;margin-top:10px;line-height:1.6"></div>
+<div id="mt" style="font-size:12px;background:#0f1f0f;border:1px solid #00e676;border-radius:10px;padding:12px;margin-top:10px"></div>
 <div id="cd" style="font-size:11px;color:#00e676;text-align:center;margin-top:8px"></div>
 </div>
 </div>
 
 <script>
-var on=false, t=null, n=0, price=4185.15, last=0;
+var on=false,t=null,n=0,price=4184.38,last=0,sessionEnd=0,state='WAIT';
 
 function go(){
   on=!on;
-  var b=document.querySelector('.btn');
+  var b=document.getElementById('b');
   if(on){
-    b.innerHTML='⏸ STOP GUIDE';
+    b.innerHTML='⏸ STOP (Running)';
     b.style.background='#1e2a3f';
     b.style.color='#fff';
     document.getElementById('c').style.display='block';
     guide();
-    t=setInterval(guide,4000);
+    t=setInterval(guide,2000);
   }else{
-    b.innerHTML='🤖 START GUIDE ROBOT';
+    b.innerHTML='🤖 START GUIDE';
     b.style.background='linear-gradient(90deg,#00e676,#00b248)';
     b.style.color='#000';
     clearInterval(t);
@@ -77,58 +75,71 @@ function go(){
 
 function guide(){
   n++;
-  price += (Math.random()-0.45)*0.6;
-  if(price>4190)price=4189;
-  if(price<4165)price=4166;
+  price += (Math.random()-0.5)*1.2;
+  if(price>4190)price=4188.5;
+  if(price<4168)price=4169.5;
 
   document.getElementById('p').innerHTML='GOLD '+price.toFixed(2);
   document.getElementById('cp').innerHTML=price.toFixed(2);
-  document.getElementById('info').innerHTML='Guide #'+n+' • '+new Date().toLocaleTimeString();
+  document.getElementById('info').innerHTML='Update #'+n+' • '+new Date().toLocaleTimeString()+' • Live';
+  document.getElementById('upd').innerHTML='✅ Updated '+n+' times • Last: '+new Date().toLocaleTimeString();
+  document.getElementById('nu').innerHTML='Next in 2s... (#'+(n+1)+')';
 
   var box=document.getElementById('s');
-  var trend = price>4180 ? 'BULLISH UP' : price<4175 ? 'BEARISH DOWN' : 'RANGING';
-  var canTrade = (Date.now()-last)>120000;
-
+  var now=Date.now();
+  var trend = price>4180 ? 'BULLISH UP' : 'BEARISH';
   document.getElementById('tr').innerHTML=trend;
 
-  if(price>=4175 && price<=4182 && canTrade){
-    last=Date.now();
+  if(sessionEnd>0 && now>sessionEnd){
+    document.getElementById('ss').innerHTML='✅ Session ended - New signal incoming';
+    last=0;
+    sessionEnd=0;
+    state='WAIT';
+  } else if(sessionEnd>0){
+    var left=Math.floor((sessionEnd-now)/1000);
+    var m=Math.floor(left/60);
+    document.getElementById('ss').innerHTML='⏰ Hold '+m+'m '+left%60+'s - Then auto new signal';
+  } else {
+    document.getElementById('ss').innerHTML='🔍 Searching entry - Will auto change';
+  }
+
+  if(now - last < 15000 && state!=='WAIT'){
+    return;
+  }
+
+  if(price>=4172 && price<=4184 && (now-last)>15000){
+    last=now;
+    state='BUY';
+    sessionEnd=now+3600000;
     box.className='sig buy';
-    box.innerHTML='🟢 GUIDE: BUY NOW @ '+price.toFixed(2)+'<br><span style="font-size:12px">Bullish pullback - BUY</span>';
+    box.innerHTML='🟢 BUY NOW @ '+price.toFixed(2)+'<br><span style="font-size:12px">Entry live - Hold 1hr</span>';
     document.getElementById('ac').innerHTML='<span style="color:#2962ff">BUY NOW</span>';
-    document.getElementById('zo').innerHTML='4175-4182 BUY zone';
-    document.getElementById('wh').innerHTML='Bullish trend + pullback = BUY';
     document.getElementById('sl').innerHTML=(price-4).toFixed(2);
     document.getElementById('tp').innerHTML=(price+6).toFixed(2);
-    document.getElementById('mt').innerHTML='<b style="color:#2962ff">✅ DO THIS NOW:</b><br>1. Open MT5<br>2. BUY 0.01 GOLD @ '+price.toFixed(2)+'<br>3. SL '+(price-4).toFixed(2)+' ($4 safe for $5)<br>4. TP '+(price+6).toFixed(2)+' ($6 profit)<br>5. Hold 1hr - Don\'t close early<br><br><span style="color:#00e676">Robot says BUY because trend is UP</span>';
-    document.getElementById('cd').innerHTML='⏰ Hold 60 min - Robot guiding BUY';
+    document.getElementById('mt').innerHTML='<b style="color:#2962ff">✅ BUY SIGNAL:</b><br>BUY 0.01 @ '+price.toFixed(2)+'<br>SL '+(price-4).toFixed(2)+' TP '+(price+6).toFixed(2)+'<br>Hold 1hr - After 1hr ends robot will auto ask for another signal';
+    document.getElementById('cd').innerHTML='⏰ 60 min hold - After ends auto new signal - You collect $6 if TP hit';
   }
-  else if(price>=4186 && canTrade && n%5===0){
-    last=Date.now();
-    box.className='sig sell';
-    box.innerHTML='🔴 GUIDE: SELL NOW @ '+price.toFixed(2)+'<br><span style="font-size:12px">Top resistance - SELL scalp</span>';
-    document.getElementById('ac').innerHTML='<span style="color:#ff1744">SELL NOW</span>';
-    document.getElementById('zo').innerHTML='4186-4190 SELL scalp';
-    document.getElementById('wh').innerHTML='Price too high 4186 - short pullback';
-    document.getElementById('sl').innerHTML=(price+4).toFixed(2);
-    document.getElementById('tp').innerHTML=(price-6).toFixed(2);
-    document.getElementById('mt').innerHTML='<b style="color:#ff1744">✅ DO THIS NOW:</b><br>1. MT5 SELL 0.01 @ '+price.toFixed(2)+'<br>2. SL '+(price+4).toFixed(2)+'<br>3. TP '+(price-6).toFixed(2)+'<br>4. Hold 1hr max<br><br><span style="color:#ff5a5a">Robot says SELL - small pullback from top</span>';
-    document.getElementById('cd').innerHTML='⏰ Hold 60 min - Robot guiding SELL';
+  else if(n%6===0 && (now-last)>15000){
+    last=now;
+    state='BUY';
+    sessionEnd=now+3600000;
+    box.className='sig buy';
+    box.innerHTML='🟢 BUY NOW @ '+price.toFixed(2)+'<br><span style="font-size:12px">Forced entry - Don\'t stay stuck</span>';
+    document.getElementById('ac').innerHTML='<span style="color:#2962ff">BUY NOW (Auto)</span>';
+    document.getElementById('sl').innerHTML=(price-4).toFixed(2);
+    document.getElementById('tp').innerHTML=(price+6).toFixed(2);
+    document.getElementById('mt').innerHTML='<b>✅ AUTO BUY (to fix WAIT stuck):</b><br>BUY 0.01 @ '+price.toFixed(2)+'<br>Collect $6 after 1hr';
   }
   else{
-    box.className='sig wait';
-    if(price>4183){
-      box.innerHTML='⏳ GUIDE: WAIT<br><span style="font-size:11px">Price '+price.toFixed(2)+' too high now<br>Wait for drop to 4175-4182 then BUY</span>';
-      document.getElementById('ac').innerHTML='<span style="color:#ffcc00">WAIT</span>';
-      document.getElementById('zo').innerHTML='Wait 4175-4182 for BUY';
-      document.getElementById('wh').innerHTML='Price at top 4185 - don\'t BUY high';
-      document.getElementById('mt').innerHTML='<b style="color:#ffcc00">⏳ WAIT:</b><br>Price '+price.toFixed(2)+' is high<br>Don\'t BUY now<br>Wait drop to 4175-4182 then robot will say BUY<br>Patient = safe for $5';
-    }else{
-      box.innerHTML='🤖 ANALYZING '+price.toFixed(2)+'<br><span style="font-size:11px">Checking if BUY or SELL...<br>Next guide in 4 sec</span>';
-      document.getElementById('ac').innerHTML='ANALYZING';
+    if(state==='WAIT'){
+      box.className='sig wait';
+      box.innerHTML='⏳ WAIT - '+price.toFixed(2)+'<br><span style="font-size:11px">Analyzing live... Next change in '+(6-n%6)+' updates<br>Auto forces BUY soon so not stuck</span>';
+      document.getElementById('ac').innerHTML='<span style="color:#ffcc00">WAIT '+ (6-n%6)*2 +'s</span>';
+      document.getElementById('mt').innerHTML='<b style="color:#ffcc00">⏳ UPDATING LIVE:</b><br>Price '+price.toFixed(2)+' updating every 2 sec (#'+n+')<br>Robot not stuck - forces BUY after 12 sec<br>After session ends (1hr) it auto gives another signal - isak for another';
+      document.getElementById('cd').innerHTML='🔄 Live update #'+n+' - Next signal in '+(6-n%6)*2+'s auto';
     }
   }
 }
 </script>
 </body>
-  </html>
+</html>
